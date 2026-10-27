@@ -1,0 +1,33 @@
+# dependencies
+/node_modules
+/.pnpm-store
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# environment variables
+.env
+.env*.local
+
+# debug & logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+
+# vercel & netlify
+.vercel
+.netlify
+*.zip
+
+# typescript
+*.tsbuildinfo
+
+# test scratch files
+scratch/test_*.ts
+scratch/test_*.js
