@@ -32,6 +32,7 @@
   "include": [
     "next-env.d.ts",
     "src/**/*",
+    "generated/**/*",
     "prisma.config.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
