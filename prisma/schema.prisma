@@ -115,26 +115,33 @@ model AuditLog {
 }
 
 model Competition {
-  id                     String                   @id @default(cuid())
-  name                   String
-  description            String?
-  additionalInfo         Json?
-  matchdayDurationHours  Int                      @default(24)
-  matchdayEndsAt         DateTime?
-  type                   CompetitionType
-  format                 CompetitionFormat
-  status                 CompetitionStatus        @default(DRAFT)
-  season                 String
-  badgeKey               String?
-  isActive               Boolean                  @default(true)
-  registrationOpenAt     DateTime?
-  registrationCloseAt    DateTime?
-  maxParticipants        Int?
-  requiresApproval       Boolean                  @default(false)
-  createdAt              DateTime                 @default(now())
-  teams                  Team[]
-  participants           CompetitionParticipant[]
-  matches                Match[]
+  id                    String                   @id @default(cuid())
+  name                  String
+  description           String?
+  additionalInfo        Json?
+  startDate             DateTime?
+  currentMatchday       Int?
+  matchdayDurationHours Int                      @default(24)
+  matchdayEndsAt        DateTime?
+  roundRobinLegs        Int                      @default(1)
+  knockoutLegs          Int                      @default(1)
+  groupCount            Int?
+  teamsPerGroup         Int?
+  qualifiersPerGroup    Int?
+  type                  CompetitionType
+  format                CompetitionFormat
+  status                CompetitionStatus        @default(DRAFT)
+  season                String
+  badgeKey              String?
+  isActive              Boolean                  @default(true)
+  registrationOpenAt    DateTime?
+  registrationCloseAt   DateTime?
+  maxParticipants       Int?
+  requiresApproval      Boolean                  @default(false)
+  createdAt             DateTime                 @default(now())
+  teams                 Team[]
+  participants          CompetitionParticipant[]
+  matches               Match[]
 }
 
 model Team {
@@ -162,6 +169,7 @@ model CompetitionParticipant {
   status        ParticipantStatus @default(APPROVED)
   groupName     String?
   seed          Int?
+  knockoutSeed  Int?
 
   @@unique([competitionId, playerId])
 }
@@ -170,15 +178,23 @@ model Match {
   id              String      @id @default(cuid())
   competitionId   String
   competition     Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-  homePlayerId    String
-  homePlayer      Player      @relation("HomeMatches", fields: [homePlayerId], references: [id], onDelete: Cascade)
-  awayPlayerId    String
-  awayPlayer      Player      @relation("AwayMatches", fields: [awayPlayerId], references: [id], onDelete: Cascade)
-  homeScore       Int
-  awayScore       Int
-  playedAt        DateTime
-  resultEnteredBy String
-  admin           Admin       @relation(fields: [resultEnteredBy], references: [id], onDelete: Cascade)
+  homePlayerId    String?
+  homePlayer      Player?     @relation("HomeMatches", fields: [homePlayerId], references: [id], onDelete: Cascade)
+  awayPlayerId    String?
+  awayPlayer      Player?     @relation("AwayMatches", fields: [awayPlayerId], references: [id], onDelete: Cascade)
+  homeScore       Int?
+  awayScore       Int?
+  homePenalty     Int?
+  awayPenalty     Int?
+  matchday        Int?
+  scheduledAt     DateTime?
+  stage           String?
+  bracketSlot     Int?
+  legNumber       Int?
+  isCompleted     Boolean     @default(false)
+  playedAt        DateTime?
+  resultEnteredBy String?
+  admin           Admin?      @relation(fields: [resultEnteredBy], references: [id], onDelete: SetNull)
 }
 
 model Bet {

@@ -29,11 +29,21 @@ export type AggregateMatch = {
 export type MatchAvgAggregateOutputType = {
   homeScore: number | null
   awayScore: number | null
+  homePenalty: number | null
+  awayPenalty: number | null
+  matchday: number | null
+  bracketSlot: number | null
+  legNumber: number | null
 }
 
 export type MatchSumAggregateOutputType = {
   homeScore: number | null
   awayScore: number | null
+  homePenalty: number | null
+  awayPenalty: number | null
+  matchday: number | null
+  bracketSlot: number | null
+  legNumber: number | null
 }
 
 export type MatchMinAggregateOutputType = {
@@ -43,6 +53,14 @@ export type MatchMinAggregateOutputType = {
   awayPlayerId: string | null
   homeScore: number | null
   awayScore: number | null
+  homePenalty: number | null
+  awayPenalty: number | null
+  matchday: number | null
+  scheduledAt: Date | null
+  stage: string | null
+  bracketSlot: number | null
+  legNumber: number | null
+  isCompleted: boolean | null
   playedAt: Date | null
   resultEnteredBy: string | null
 }
@@ -54,6 +72,14 @@ export type MatchMaxAggregateOutputType = {
   awayPlayerId: string | null
   homeScore: number | null
   awayScore: number | null
+  homePenalty: number | null
+  awayPenalty: number | null
+  matchday: number | null
+  scheduledAt: Date | null
+  stage: string | null
+  bracketSlot: number | null
+  legNumber: number | null
+  isCompleted: boolean | null
   playedAt: Date | null
   resultEnteredBy: string | null
 }
@@ -65,6 +91,14 @@ export type MatchCountAggregateOutputType = {
   awayPlayerId: number
   homeScore: number
   awayScore: number
+  homePenalty: number
+  awayPenalty: number
+  matchday: number
+  scheduledAt: number
+  stage: number
+  bracketSlot: number
+  legNumber: number
+  isCompleted: number
   playedAt: number
   resultEnteredBy: number
   _all: number
@@ -74,11 +108,21 @@ export type MatchCountAggregateOutputType = {
 export type MatchAvgAggregateInputType = {
   homeScore?: true
   awayScore?: true
+  homePenalty?: true
+  awayPenalty?: true
+  matchday?: true
+  bracketSlot?: true
+  legNumber?: true
 }
 
 export type MatchSumAggregateInputType = {
   homeScore?: true
   awayScore?: true
+  homePenalty?: true
+  awayPenalty?: true
+  matchday?: true
+  bracketSlot?: true
+  legNumber?: true
 }
 
 export type MatchMinAggregateInputType = {
@@ -88,6 +132,14 @@ export type MatchMinAggregateInputType = {
   awayPlayerId?: true
   homeScore?: true
   awayScore?: true
+  homePenalty?: true
+  awayPenalty?: true
+  matchday?: true
+  scheduledAt?: true
+  stage?: true
+  bracketSlot?: true
+  legNumber?: true
+  isCompleted?: true
   playedAt?: true
   resultEnteredBy?: true
 }
@@ -99,6 +151,14 @@ export type MatchMaxAggregateInputType = {
   awayPlayerId?: true
   homeScore?: true
   awayScore?: true
+  homePenalty?: true
+  awayPenalty?: true
+  matchday?: true
+  scheduledAt?: true
+  stage?: true
+  bracketSlot?: true
+  legNumber?: true
+  isCompleted?: true
   playedAt?: true
   resultEnteredBy?: true
 }
@@ -110,6 +170,14 @@ export type MatchCountAggregateInputType = {
   awayPlayerId?: true
   homeScore?: true
   awayScore?: true
+  homePenalty?: true
+  awayPenalty?: true
+  matchday?: true
+  scheduledAt?: true
+  stage?: true
+  bracketSlot?: true
+  legNumber?: true
+  isCompleted?: true
   playedAt?: true
   resultEnteredBy?: true
   _all?: true
@@ -204,12 +272,20 @@ export type MatchGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type MatchGroupByOutputType = {
   id: string
   competitionId: string
-  homePlayerId: string
-  awayPlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date
-  resultEnteredBy: string
+  homePlayerId: string | null
+  awayPlayerId: string | null
+  homeScore: number | null
+  awayScore: number | null
+  homePenalty: number | null
+  awayPenalty: number | null
+  matchday: number | null
+  scheduledAt: Date | null
+  stage: string | null
+  bracketSlot: number | null
+  legNumber: number | null
+  isCompleted: boolean
+  playedAt: Date | null
+  resultEnteredBy: string | null
   _count: MatchCountAggregateOutputType | null
   _avg: MatchAvgAggregateOutputType | null
   _sum: MatchSumAggregateOutputType | null
@@ -238,27 +314,43 @@ export type MatchWhereInput = {
   NOT?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
   id?: Prisma.StringFilter<"Match"> | string
   competitionId?: Prisma.StringFilter<"Match"> | string
-  homePlayerId?: Prisma.StringFilter<"Match"> | string
-  awayPlayerId?: Prisma.StringFilter<"Match"> | string
-  homeScore?: Prisma.IntFilter<"Match"> | number
-  awayScore?: Prisma.IntFilter<"Match"> | number
-  playedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
-  resultEnteredBy?: Prisma.StringFilter<"Match"> | string
+  homePlayerId?: Prisma.StringNullableFilter<"Match"> | string | null
+  awayPlayerId?: Prisma.StringNullableFilter<"Match"> | string | null
+  homeScore?: Prisma.IntNullableFilter<"Match"> | number | null
+  awayScore?: Prisma.IntNullableFilter<"Match"> | number | null
+  homePenalty?: Prisma.IntNullableFilter<"Match"> | number | null
+  awayPenalty?: Prisma.IntNullableFilter<"Match"> | number | null
+  matchday?: Prisma.IntNullableFilter<"Match"> | number | null
+  scheduledAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
+  stage?: Prisma.StringNullableFilter<"Match"> | string | null
+  bracketSlot?: Prisma.IntNullableFilter<"Match"> | number | null
+  legNumber?: Prisma.IntNullableFilter<"Match"> | number | null
+  isCompleted?: Prisma.BoolFilter<"Match"> | boolean
+  playedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
+  resultEnteredBy?: Prisma.StringNullableFilter<"Match"> | string | null
   competition?: Prisma.XOR<Prisma.CompetitionScalarRelationFilter, Prisma.CompetitionWhereInput>
-  homePlayer?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  awayPlayer?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  admin?: Prisma.XOR<Prisma.AdminScalarRelationFilter, Prisma.AdminWhereInput>
+  homePlayer?: Prisma.XOR<Prisma.PlayerNullableScalarRelationFilter, Prisma.PlayerWhereInput> | null
+  awayPlayer?: Prisma.XOR<Prisma.PlayerNullableScalarRelationFilter, Prisma.PlayerWhereInput> | null
+  admin?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
 }
 
 export type MatchOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   competitionId?: Prisma.SortOrder
-  homePlayerId?: Prisma.SortOrder
-  awayPlayerId?: Prisma.SortOrder
-  homeScore?: Prisma.SortOrder
-  awayScore?: Prisma.SortOrder
-  playedAt?: Prisma.SortOrder
-  resultEnteredBy?: Prisma.SortOrder
+  homePlayerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  awayPlayerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  homeScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  awayScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  homePenalty?: Prisma.SortOrderInput | Prisma.SortOrder
+  awayPenalty?: Prisma.SortOrderInput | Prisma.SortOrder
+  matchday?: Prisma.SortOrderInput | Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  stage?: Prisma.SortOrderInput | Prisma.SortOrder
+  bracketSlot?: Prisma.SortOrderInput | Prisma.SortOrder
+  legNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  isCompleted?: Prisma.SortOrder
+  playedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  resultEnteredBy?: Prisma.SortOrderInput | Prisma.SortOrder
   competition?: Prisma.CompetitionOrderByWithRelationInput
   homePlayer?: Prisma.PlayerOrderByWithRelationInput
   awayPlayer?: Prisma.PlayerOrderByWithRelationInput
@@ -271,27 +363,43 @@ export type MatchWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.MatchWhereInput[]
   NOT?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
   competitionId?: Prisma.StringFilter<"Match"> | string
-  homePlayerId?: Prisma.StringFilter<"Match"> | string
-  awayPlayerId?: Prisma.StringFilter<"Match"> | string
-  homeScore?: Prisma.IntFilter<"Match"> | number
-  awayScore?: Prisma.IntFilter<"Match"> | number
-  playedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
-  resultEnteredBy?: Prisma.StringFilter<"Match"> | string
+  homePlayerId?: Prisma.StringNullableFilter<"Match"> | string | null
+  awayPlayerId?: Prisma.StringNullableFilter<"Match"> | string | null
+  homeScore?: Prisma.IntNullableFilter<"Match"> | number | null
+  awayScore?: Prisma.IntNullableFilter<"Match"> | number | null
+  homePenalty?: Prisma.IntNullableFilter<"Match"> | number | null
+  awayPenalty?: Prisma.IntNullableFilter<"Match"> | number | null
+  matchday?: Prisma.IntNullableFilter<"Match"> | number | null
+  scheduledAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
+  stage?: Prisma.StringNullableFilter<"Match"> | string | null
+  bracketSlot?: Prisma.IntNullableFilter<"Match"> | number | null
+  legNumber?: Prisma.IntNullableFilter<"Match"> | number | null
+  isCompleted?: Prisma.BoolFilter<"Match"> | boolean
+  playedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
+  resultEnteredBy?: Prisma.StringNullableFilter<"Match"> | string | null
   competition?: Prisma.XOR<Prisma.CompetitionScalarRelationFilter, Prisma.CompetitionWhereInput>
-  homePlayer?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  awayPlayer?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
-  admin?: Prisma.XOR<Prisma.AdminScalarRelationFilter, Prisma.AdminWhereInput>
+  homePlayer?: Prisma.XOR<Prisma.PlayerNullableScalarRelationFilter, Prisma.PlayerWhereInput> | null
+  awayPlayer?: Prisma.XOR<Prisma.PlayerNullableScalarRelationFilter, Prisma.PlayerWhereInput> | null
+  admin?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
 }, "id">
 
 export type MatchOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   competitionId?: Prisma.SortOrder
-  homePlayerId?: Prisma.SortOrder
-  awayPlayerId?: Prisma.SortOrder
-  homeScore?: Prisma.SortOrder
-  awayScore?: Prisma.SortOrder
-  playedAt?: Prisma.SortOrder
-  resultEnteredBy?: Prisma.SortOrder
+  homePlayerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  awayPlayerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  homeScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  awayScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  homePenalty?: Prisma.SortOrderInput | Prisma.SortOrder
+  awayPenalty?: Prisma.SortOrderInput | Prisma.SortOrder
+  matchday?: Prisma.SortOrderInput | Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  stage?: Prisma.SortOrderInput | Prisma.SortOrder
+  bracketSlot?: Prisma.SortOrderInput | Prisma.SortOrder
+  legNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  isCompleted?: Prisma.SortOrder
+  playedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  resultEnteredBy?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.MatchCountOrderByAggregateInput
   _avg?: Prisma.MatchAvgOrderByAggregateInput
   _max?: Prisma.MatchMaxOrderByAggregateInput
@@ -305,85 +413,149 @@ export type MatchScalarWhereWithAggregatesInput = {
   NOT?: Prisma.MatchScalarWhereWithAggregatesInput | Prisma.MatchScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Match"> | string
   competitionId?: Prisma.StringWithAggregatesFilter<"Match"> | string
-  homePlayerId?: Prisma.StringWithAggregatesFilter<"Match"> | string
-  awayPlayerId?: Prisma.StringWithAggregatesFilter<"Match"> | string
-  homeScore?: Prisma.IntWithAggregatesFilter<"Match"> | number
-  awayScore?: Prisma.IntWithAggregatesFilter<"Match"> | number
-  playedAt?: Prisma.DateTimeWithAggregatesFilter<"Match"> | Date | string
-  resultEnteredBy?: Prisma.StringWithAggregatesFilter<"Match"> | string
+  homePlayerId?: Prisma.StringNullableWithAggregatesFilter<"Match"> | string | null
+  awayPlayerId?: Prisma.StringNullableWithAggregatesFilter<"Match"> | string | null
+  homeScore?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
+  awayScore?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
+  homePenalty?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
+  awayPenalty?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
+  matchday?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
+  scheduledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Match"> | Date | string | null
+  stage?: Prisma.StringNullableWithAggregatesFilter<"Match"> | string | null
+  bracketSlot?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
+  legNumber?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
+  isCompleted?: Prisma.BoolWithAggregatesFilter<"Match"> | boolean
+  playedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Match"> | Date | string | null
+  resultEnteredBy?: Prisma.StringNullableWithAggregatesFilter<"Match"> | string | null
 }
 
 export type MatchCreateInput = {
   id?: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
   competition: Prisma.CompetitionCreateNestedOneWithoutMatchesInput
-  homePlayer: Prisma.PlayerCreateNestedOneWithoutHomeMatchesInput
-  awayPlayer: Prisma.PlayerCreateNestedOneWithoutAwayMatchesInput
-  admin: Prisma.AdminCreateNestedOneWithoutMatchesEnteredInput
+  homePlayer?: Prisma.PlayerCreateNestedOneWithoutHomeMatchesInput
+  awayPlayer?: Prisma.PlayerCreateNestedOneWithoutAwayMatchesInput
+  admin?: Prisma.AdminCreateNestedOneWithoutMatchesEnteredInput
 }
 
 export type MatchUncheckedCreateInput = {
   id?: string
   competitionId: string
-  homePlayerId: string
-  awayPlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
-  resultEnteredBy: string
+  homePlayerId?: string | null
+  awayPlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
+  resultEnteredBy?: string | null
 }
 
 export type MatchUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   competition?: Prisma.CompetitionUpdateOneRequiredWithoutMatchesNestedInput
-  homePlayer?: Prisma.PlayerUpdateOneRequiredWithoutHomeMatchesNestedInput
-  awayPlayer?: Prisma.PlayerUpdateOneRequiredWithoutAwayMatchesNestedInput
-  admin?: Prisma.AdminUpdateOneRequiredWithoutMatchesEnteredNestedInput
+  homePlayer?: Prisma.PlayerUpdateOneWithoutHomeMatchesNestedInput
+  awayPlayer?: Prisma.PlayerUpdateOneWithoutAwayMatchesNestedInput
+  admin?: Prisma.AdminUpdateOneWithoutMatchesEnteredNestedInput
 }
 
 export type MatchUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   competitionId?: Prisma.StringFieldUpdateOperationsInput | string
-  homePlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  awayPlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  resultEnteredBy?: Prisma.StringFieldUpdateOperationsInput | string
+  homePlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  awayPlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resultEnteredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MatchCreateManyInput = {
   id?: string
   competitionId: string
-  homePlayerId: string
-  awayPlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
-  resultEnteredBy: string
+  homePlayerId?: string | null
+  awayPlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
+  resultEnteredBy?: string | null
 }
 
 export type MatchUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type MatchUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   competitionId?: Prisma.StringFieldUpdateOperationsInput | string
-  homePlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  awayPlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  resultEnteredBy?: Prisma.StringFieldUpdateOperationsInput | string
+  homePlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  awayPlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resultEnteredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MatchListRelationFilter = {
@@ -403,6 +575,14 @@ export type MatchCountOrderByAggregateInput = {
   awayPlayerId?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
+  homePenalty?: Prisma.SortOrder
+  awayPenalty?: Prisma.SortOrder
+  matchday?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrder
+  stage?: Prisma.SortOrder
+  bracketSlot?: Prisma.SortOrder
+  legNumber?: Prisma.SortOrder
+  isCompleted?: Prisma.SortOrder
   playedAt?: Prisma.SortOrder
   resultEnteredBy?: Prisma.SortOrder
 }
@@ -410,6 +590,11 @@ export type MatchCountOrderByAggregateInput = {
 export type MatchAvgOrderByAggregateInput = {
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
+  homePenalty?: Prisma.SortOrder
+  awayPenalty?: Prisma.SortOrder
+  matchday?: Prisma.SortOrder
+  bracketSlot?: Prisma.SortOrder
+  legNumber?: Prisma.SortOrder
 }
 
 export type MatchMaxOrderByAggregateInput = {
@@ -419,6 +604,14 @@ export type MatchMaxOrderByAggregateInput = {
   awayPlayerId?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
+  homePenalty?: Prisma.SortOrder
+  awayPenalty?: Prisma.SortOrder
+  matchday?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrder
+  stage?: Prisma.SortOrder
+  bracketSlot?: Prisma.SortOrder
+  legNumber?: Prisma.SortOrder
+  isCompleted?: Prisma.SortOrder
   playedAt?: Prisma.SortOrder
   resultEnteredBy?: Prisma.SortOrder
 }
@@ -430,6 +623,14 @@ export type MatchMinOrderByAggregateInput = {
   awayPlayerId?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
+  homePenalty?: Prisma.SortOrder
+  awayPenalty?: Prisma.SortOrder
+  matchday?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrder
+  stage?: Prisma.SortOrder
+  bracketSlot?: Prisma.SortOrder
+  legNumber?: Prisma.SortOrder
+  isCompleted?: Prisma.SortOrder
   playedAt?: Prisma.SortOrder
   resultEnteredBy?: Prisma.SortOrder
 }
@@ -437,6 +638,11 @@ export type MatchMinOrderByAggregateInput = {
 export type MatchSumOrderByAggregateInput = {
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
+  homePenalty?: Prisma.SortOrder
+  awayPenalty?: Prisma.SortOrder
+  matchday?: Prisma.SortOrder
+  bracketSlot?: Prisma.SortOrder
+  legNumber?: Prisma.SortOrder
 }
 
 export type MatchCreateNestedManyWithoutHomePlayerInput = {
@@ -609,22 +815,38 @@ export type MatchUncheckedUpdateManyWithoutCompetitionNestedInput = {
 
 export type MatchCreateWithoutHomePlayerInput = {
   id?: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
   competition: Prisma.CompetitionCreateNestedOneWithoutMatchesInput
-  awayPlayer: Prisma.PlayerCreateNestedOneWithoutAwayMatchesInput
-  admin: Prisma.AdminCreateNestedOneWithoutMatchesEnteredInput
+  awayPlayer?: Prisma.PlayerCreateNestedOneWithoutAwayMatchesInput
+  admin?: Prisma.AdminCreateNestedOneWithoutMatchesEnteredInput
 }
 
 export type MatchUncheckedCreateWithoutHomePlayerInput = {
   id?: string
   competitionId: string
-  awayPlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
-  resultEnteredBy: string
+  awayPlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
+  resultEnteredBy?: string | null
 }
 
 export type MatchCreateOrConnectWithoutHomePlayerInput = {
@@ -639,22 +861,38 @@ export type MatchCreateManyHomePlayerInputEnvelope = {
 
 export type MatchCreateWithoutAwayPlayerInput = {
   id?: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
   competition: Prisma.CompetitionCreateNestedOneWithoutMatchesInput
-  homePlayer: Prisma.PlayerCreateNestedOneWithoutHomeMatchesInput
-  admin: Prisma.AdminCreateNestedOneWithoutMatchesEnteredInput
+  homePlayer?: Prisma.PlayerCreateNestedOneWithoutHomeMatchesInput
+  admin?: Prisma.AdminCreateNestedOneWithoutMatchesEnteredInput
 }
 
 export type MatchUncheckedCreateWithoutAwayPlayerInput = {
   id?: string
   competitionId: string
-  homePlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
-  resultEnteredBy: string
+  homePlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
+  resultEnteredBy?: string | null
 }
 
 export type MatchCreateOrConnectWithoutAwayPlayerInput = {
@@ -689,12 +927,20 @@ export type MatchScalarWhereInput = {
   NOT?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
   id?: Prisma.StringFilter<"Match"> | string
   competitionId?: Prisma.StringFilter<"Match"> | string
-  homePlayerId?: Prisma.StringFilter<"Match"> | string
-  awayPlayerId?: Prisma.StringFilter<"Match"> | string
-  homeScore?: Prisma.IntFilter<"Match"> | number
-  awayScore?: Prisma.IntFilter<"Match"> | number
-  playedAt?: Prisma.DateTimeFilter<"Match"> | Date | string
-  resultEnteredBy?: Prisma.StringFilter<"Match"> | string
+  homePlayerId?: Prisma.StringNullableFilter<"Match"> | string | null
+  awayPlayerId?: Prisma.StringNullableFilter<"Match"> | string | null
+  homeScore?: Prisma.IntNullableFilter<"Match"> | number | null
+  awayScore?: Prisma.IntNullableFilter<"Match"> | number | null
+  homePenalty?: Prisma.IntNullableFilter<"Match"> | number | null
+  awayPenalty?: Prisma.IntNullableFilter<"Match"> | number | null
+  matchday?: Prisma.IntNullableFilter<"Match"> | number | null
+  scheduledAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
+  stage?: Prisma.StringNullableFilter<"Match"> | string | null
+  bracketSlot?: Prisma.IntNullableFilter<"Match"> | number | null
+  legNumber?: Prisma.IntNullableFilter<"Match"> | number | null
+  isCompleted?: Prisma.BoolFilter<"Match"> | boolean
+  playedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
+  resultEnteredBy?: Prisma.StringNullableFilter<"Match"> | string | null
 }
 
 export type MatchUpsertWithWhereUniqueWithoutAwayPlayerInput = {
@@ -715,22 +961,38 @@ export type MatchUpdateManyWithWhereWithoutAwayPlayerInput = {
 
 export type MatchCreateWithoutAdminInput = {
   id?: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
   competition: Prisma.CompetitionCreateNestedOneWithoutMatchesInput
-  homePlayer: Prisma.PlayerCreateNestedOneWithoutHomeMatchesInput
-  awayPlayer: Prisma.PlayerCreateNestedOneWithoutAwayMatchesInput
+  homePlayer?: Prisma.PlayerCreateNestedOneWithoutHomeMatchesInput
+  awayPlayer?: Prisma.PlayerCreateNestedOneWithoutAwayMatchesInput
 }
 
 export type MatchUncheckedCreateWithoutAdminInput = {
   id?: string
   competitionId: string
-  homePlayerId: string
-  awayPlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
+  homePlayerId?: string | null
+  awayPlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
 }
 
 export type MatchCreateOrConnectWithoutAdminInput = {
@@ -761,22 +1023,38 @@ export type MatchUpdateManyWithWhereWithoutAdminInput = {
 
 export type MatchCreateWithoutCompetitionInput = {
   id?: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
-  homePlayer: Prisma.PlayerCreateNestedOneWithoutHomeMatchesInput
-  awayPlayer: Prisma.PlayerCreateNestedOneWithoutAwayMatchesInput
-  admin: Prisma.AdminCreateNestedOneWithoutMatchesEnteredInput
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
+  homePlayer?: Prisma.PlayerCreateNestedOneWithoutHomeMatchesInput
+  awayPlayer?: Prisma.PlayerCreateNestedOneWithoutAwayMatchesInput
+  admin?: Prisma.AdminCreateNestedOneWithoutMatchesEnteredInput
 }
 
 export type MatchUncheckedCreateWithoutCompetitionInput = {
   id?: string
-  homePlayerId: string
-  awayPlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
-  resultEnteredBy: string
+  homePlayerId?: string | null
+  awayPlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
+  resultEnteredBy?: string | null
 }
 
 export type MatchCreateOrConnectWithoutCompetitionInput = {
@@ -808,161 +1086,289 @@ export type MatchUpdateManyWithWhereWithoutCompetitionInput = {
 export type MatchCreateManyHomePlayerInput = {
   id?: string
   competitionId: string
-  awayPlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
-  resultEnteredBy: string
+  awayPlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
+  resultEnteredBy?: string | null
 }
 
 export type MatchCreateManyAwayPlayerInput = {
   id?: string
   competitionId: string
-  homePlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
-  resultEnteredBy: string
+  homePlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
+  resultEnteredBy?: string | null
 }
 
 export type MatchUpdateWithoutHomePlayerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   competition?: Prisma.CompetitionUpdateOneRequiredWithoutMatchesNestedInput
-  awayPlayer?: Prisma.PlayerUpdateOneRequiredWithoutAwayMatchesNestedInput
-  admin?: Prisma.AdminUpdateOneRequiredWithoutMatchesEnteredNestedInput
+  awayPlayer?: Prisma.PlayerUpdateOneWithoutAwayMatchesNestedInput
+  admin?: Prisma.AdminUpdateOneWithoutMatchesEnteredNestedInput
 }
 
 export type MatchUncheckedUpdateWithoutHomePlayerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   competitionId?: Prisma.StringFieldUpdateOperationsInput | string
-  awayPlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  resultEnteredBy?: Prisma.StringFieldUpdateOperationsInput | string
+  awayPlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resultEnteredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MatchUncheckedUpdateManyWithoutHomePlayerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   competitionId?: Prisma.StringFieldUpdateOperationsInput | string
-  awayPlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  resultEnteredBy?: Prisma.StringFieldUpdateOperationsInput | string
+  awayPlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resultEnteredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MatchUpdateWithoutAwayPlayerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   competition?: Prisma.CompetitionUpdateOneRequiredWithoutMatchesNestedInput
-  homePlayer?: Prisma.PlayerUpdateOneRequiredWithoutHomeMatchesNestedInput
-  admin?: Prisma.AdminUpdateOneRequiredWithoutMatchesEnteredNestedInput
+  homePlayer?: Prisma.PlayerUpdateOneWithoutHomeMatchesNestedInput
+  admin?: Prisma.AdminUpdateOneWithoutMatchesEnteredNestedInput
 }
 
 export type MatchUncheckedUpdateWithoutAwayPlayerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   competitionId?: Prisma.StringFieldUpdateOperationsInput | string
-  homePlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  resultEnteredBy?: Prisma.StringFieldUpdateOperationsInput | string
+  homePlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resultEnteredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MatchUncheckedUpdateManyWithoutAwayPlayerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   competitionId?: Prisma.StringFieldUpdateOperationsInput | string
-  homePlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  resultEnteredBy?: Prisma.StringFieldUpdateOperationsInput | string
+  homePlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resultEnteredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MatchCreateManyAdminInput = {
   id?: string
   competitionId: string
-  homePlayerId: string
-  awayPlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
+  homePlayerId?: string | null
+  awayPlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
 }
 
 export type MatchUpdateWithoutAdminInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   competition?: Prisma.CompetitionUpdateOneRequiredWithoutMatchesNestedInput
-  homePlayer?: Prisma.PlayerUpdateOneRequiredWithoutHomeMatchesNestedInput
-  awayPlayer?: Prisma.PlayerUpdateOneRequiredWithoutAwayMatchesNestedInput
+  homePlayer?: Prisma.PlayerUpdateOneWithoutHomeMatchesNestedInput
+  awayPlayer?: Prisma.PlayerUpdateOneWithoutAwayMatchesNestedInput
 }
 
 export type MatchUncheckedUpdateWithoutAdminInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   competitionId?: Prisma.StringFieldUpdateOperationsInput | string
-  homePlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  awayPlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  homePlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  awayPlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type MatchUncheckedUpdateManyWithoutAdminInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   competitionId?: Prisma.StringFieldUpdateOperationsInput | string
-  homePlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  awayPlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  homePlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  awayPlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type MatchCreateManyCompetitionInput = {
   id?: string
-  homePlayerId: string
-  awayPlayerId: string
-  homeScore: number
-  awayScore: number
-  playedAt: Date | string
-  resultEnteredBy: string
+  homePlayerId?: string | null
+  awayPlayerId?: string | null
+  homeScore?: number | null
+  awayScore?: number | null
+  homePenalty?: number | null
+  awayPenalty?: number | null
+  matchday?: number | null
+  scheduledAt?: Date | string | null
+  stage?: string | null
+  bracketSlot?: number | null
+  legNumber?: number | null
+  isCompleted?: boolean
+  playedAt?: Date | string | null
+  resultEnteredBy?: string | null
 }
 
 export type MatchUpdateWithoutCompetitionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  homePlayer?: Prisma.PlayerUpdateOneRequiredWithoutHomeMatchesNestedInput
-  awayPlayer?: Prisma.PlayerUpdateOneRequiredWithoutAwayMatchesNestedInput
-  admin?: Prisma.AdminUpdateOneRequiredWithoutMatchesEnteredNestedInput
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  homePlayer?: Prisma.PlayerUpdateOneWithoutHomeMatchesNestedInput
+  awayPlayer?: Prisma.PlayerUpdateOneWithoutAwayMatchesNestedInput
+  admin?: Prisma.AdminUpdateOneWithoutMatchesEnteredNestedInput
 }
 
 export type MatchUncheckedUpdateWithoutCompetitionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  homePlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  awayPlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  resultEnteredBy?: Prisma.StringFieldUpdateOperationsInput | string
+  homePlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  awayPlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resultEnteredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MatchUncheckedUpdateManyWithoutCompetitionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  homePlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  awayPlayerId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeScore?: Prisma.IntFieldUpdateOperationsInput | number
-  awayScore?: Prisma.IntFieldUpdateOperationsInput | number
-  playedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  resultEnteredBy?: Prisma.StringFieldUpdateOperationsInput | string
+  homePlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  awayPlayerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  homePenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayPenalty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  matchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bracketSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  legNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  playedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resultEnteredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -974,12 +1380,20 @@ export type MatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   awayPlayerId?: boolean
   homeScore?: boolean
   awayScore?: boolean
+  homePenalty?: boolean
+  awayPenalty?: boolean
+  matchday?: boolean
+  scheduledAt?: boolean
+  stage?: boolean
+  bracketSlot?: boolean
+  legNumber?: boolean
+  isCompleted?: boolean
   playedAt?: boolean
   resultEnteredBy?: boolean
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
-  homePlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  awayPlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
+  homePlayer?: boolean | Prisma.Match$homePlayerArgs<ExtArgs>
+  awayPlayer?: boolean | Prisma.Match$awayPlayerArgs<ExtArgs>
+  admin?: boolean | Prisma.Match$adminArgs<ExtArgs>
 }, ExtArgs["result"]["match"]>
 
 export type MatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -989,12 +1403,20 @@ export type MatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   awayPlayerId?: boolean
   homeScore?: boolean
   awayScore?: boolean
+  homePenalty?: boolean
+  awayPenalty?: boolean
+  matchday?: boolean
+  scheduledAt?: boolean
+  stage?: boolean
+  bracketSlot?: boolean
+  legNumber?: boolean
+  isCompleted?: boolean
   playedAt?: boolean
   resultEnteredBy?: boolean
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
-  homePlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  awayPlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
+  homePlayer?: boolean | Prisma.Match$homePlayerArgs<ExtArgs>
+  awayPlayer?: boolean | Prisma.Match$awayPlayerArgs<ExtArgs>
+  admin?: boolean | Prisma.Match$adminArgs<ExtArgs>
 }, ExtArgs["result"]["match"]>
 
 export type MatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1004,12 +1426,20 @@ export type MatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   awayPlayerId?: boolean
   homeScore?: boolean
   awayScore?: boolean
+  homePenalty?: boolean
+  awayPenalty?: boolean
+  matchday?: boolean
+  scheduledAt?: boolean
+  stage?: boolean
+  bracketSlot?: boolean
+  legNumber?: boolean
+  isCompleted?: boolean
   playedAt?: boolean
   resultEnteredBy?: boolean
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
-  homePlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  awayPlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
+  homePlayer?: boolean | Prisma.Match$homePlayerArgs<ExtArgs>
+  awayPlayer?: boolean | Prisma.Match$awayPlayerArgs<ExtArgs>
+  admin?: boolean | Prisma.Match$adminArgs<ExtArgs>
 }, ExtArgs["result"]["match"]>
 
 export type MatchSelectScalar = {
@@ -1019,47 +1449,63 @@ export type MatchSelectScalar = {
   awayPlayerId?: boolean
   homeScore?: boolean
   awayScore?: boolean
+  homePenalty?: boolean
+  awayPenalty?: boolean
+  matchday?: boolean
+  scheduledAt?: boolean
+  stage?: boolean
+  bracketSlot?: boolean
+  legNumber?: boolean
+  isCompleted?: boolean
   playedAt?: boolean
   resultEnteredBy?: boolean
 }
 
-export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "competitionId" | "homePlayerId" | "awayPlayerId" | "homeScore" | "awayScore" | "playedAt" | "resultEnteredBy", ExtArgs["result"]["match"]>
+export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "competitionId" | "homePlayerId" | "awayPlayerId" | "homeScore" | "awayScore" | "homePenalty" | "awayPenalty" | "matchday" | "scheduledAt" | "stage" | "bracketSlot" | "legNumber" | "isCompleted" | "playedAt" | "resultEnteredBy", ExtArgs["result"]["match"]>
 export type MatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
-  homePlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  awayPlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
+  homePlayer?: boolean | Prisma.Match$homePlayerArgs<ExtArgs>
+  awayPlayer?: boolean | Prisma.Match$awayPlayerArgs<ExtArgs>
+  admin?: boolean | Prisma.Match$adminArgs<ExtArgs>
 }
 export type MatchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
-  homePlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  awayPlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
+  homePlayer?: boolean | Prisma.Match$homePlayerArgs<ExtArgs>
+  awayPlayer?: boolean | Prisma.Match$awayPlayerArgs<ExtArgs>
+  admin?: boolean | Prisma.Match$adminArgs<ExtArgs>
 }
 export type MatchIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
-  homePlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  awayPlayer?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
-  admin?: boolean | Prisma.AdminDefaultArgs<ExtArgs>
+  homePlayer?: boolean | Prisma.Match$homePlayerArgs<ExtArgs>
+  awayPlayer?: boolean | Prisma.Match$awayPlayerArgs<ExtArgs>
+  admin?: boolean | Prisma.Match$adminArgs<ExtArgs>
 }
 
 export type $MatchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Match"
   objects: {
     competition: Prisma.$CompetitionPayload<ExtArgs>
-    homePlayer: Prisma.$PlayerPayload<ExtArgs>
-    awayPlayer: Prisma.$PlayerPayload<ExtArgs>
-    admin: Prisma.$AdminPayload<ExtArgs>
+    homePlayer: Prisma.$PlayerPayload<ExtArgs> | null
+    awayPlayer: Prisma.$PlayerPayload<ExtArgs> | null
+    admin: Prisma.$AdminPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     competitionId: string
-    homePlayerId: string
-    awayPlayerId: string
-    homeScore: number
-    awayScore: number
-    playedAt: Date
-    resultEnteredBy: string
+    homePlayerId: string | null
+    awayPlayerId: string | null
+    homeScore: number | null
+    awayScore: number | null
+    homePenalty: number | null
+    awayPenalty: number | null
+    matchday: number | null
+    scheduledAt: Date | null
+    stage: string | null
+    bracketSlot: number | null
+    legNumber: number | null
+    isCompleted: boolean
+    playedAt: Date | null
+    resultEnteredBy: string | null
   }, ExtArgs["result"]["match"]>
   composites: {}
 }
@@ -1455,9 +1901,9 @@ readonly fields: MatchFieldRefs;
 export interface Prisma__MatchClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   competition<T extends Prisma.CompetitionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompetitionDefaultArgs<ExtArgs>>): Prisma.Prisma__CompetitionClient<runtime.Types.Result.GetResult<Prisma.$CompetitionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  homePlayer<T extends Prisma.PlayerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlayerDefaultArgs<ExtArgs>>): Prisma.Prisma__PlayerClient<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  awayPlayer<T extends Prisma.PlayerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlayerDefaultArgs<ExtArgs>>): Prisma.Prisma__PlayerClient<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  admin<T extends Prisma.AdminDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminDefaultArgs<ExtArgs>>): Prisma.Prisma__AdminClient<runtime.Types.Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  homePlayer<T extends Prisma.Match$homePlayerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$homePlayerArgs<ExtArgs>>): Prisma.Prisma__PlayerClient<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  awayPlayer<T extends Prisma.Match$awayPlayerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$awayPlayerArgs<ExtArgs>>): Prisma.Prisma__PlayerClient<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  admin<T extends Prisma.Match$adminArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Match$adminArgs<ExtArgs>>): Prisma.Prisma__AdminClient<runtime.Types.Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1493,6 +1939,14 @@ export interface MatchFieldRefs {
   readonly awayPlayerId: Prisma.FieldRef<"Match", 'String'>
   readonly homeScore: Prisma.FieldRef<"Match", 'Int'>
   readonly awayScore: Prisma.FieldRef<"Match", 'Int'>
+  readonly homePenalty: Prisma.FieldRef<"Match", 'Int'>
+  readonly awayPenalty: Prisma.FieldRef<"Match", 'Int'>
+  readonly matchday: Prisma.FieldRef<"Match", 'Int'>
+  readonly scheduledAt: Prisma.FieldRef<"Match", 'DateTime'>
+  readonly stage: Prisma.FieldRef<"Match", 'String'>
+  readonly bracketSlot: Prisma.FieldRef<"Match", 'Int'>
+  readonly legNumber: Prisma.FieldRef<"Match", 'Int'>
+  readonly isCompleted: Prisma.FieldRef<"Match", 'Boolean'>
   readonly playedAt: Prisma.FieldRef<"Match", 'DateTime'>
   readonly resultEnteredBy: Prisma.FieldRef<"Match", 'String'>
 }
@@ -1893,6 +2347,63 @@ export type MatchDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Matches to delete.
    */
   limit?: number
+}
+
+/**
+ * Match.homePlayer
+ */
+export type Match$homePlayerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Player
+   */
+  select?: Prisma.PlayerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Player
+   */
+  omit?: Prisma.PlayerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlayerInclude<ExtArgs> | null
+  where?: Prisma.PlayerWhereInput
+}
+
+/**
+ * Match.awayPlayer
+ */
+export type Match$awayPlayerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Player
+   */
+  select?: Prisma.PlayerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Player
+   */
+  omit?: Prisma.PlayerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlayerInclude<ExtArgs> | null
+  where?: Prisma.PlayerWhereInput
+}
+
+/**
+ * Match.admin
+ */
+export type Match$adminArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Admin
+   */
+  select?: Prisma.AdminSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Admin
+   */
+  omit?: Prisma.AdminOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminInclude<ExtArgs> | null
+  where?: Prisma.AdminWhereInput
 }
 
 /**

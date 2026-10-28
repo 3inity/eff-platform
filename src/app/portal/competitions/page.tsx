@@ -19,7 +19,9 @@ import {
   X,
   Shield,
   Plus,
+  Swords,
 } from "lucide-react";
+import { PlayerPortalFixtures } from "@/components/PlayerPortalFixtures";
 
 interface ParticipantInfo {
   id: string;
@@ -288,6 +290,27 @@ export default function PortalCompetitionsPage() {
           <span>{message.text}</span>
         </div>
       )}
+
+      {/* My Fixtures Section */}
+      {currentUserId && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between border-b border-blue-800/40 pb-3">
+            <h2 className="text-lg font-black tracking-wide uppercase text-white flex items-center gap-2">
+              <Swords className="w-5 h-5 text-[#e5b53e]" />
+              My Fixtures & Tournament Matches
+            </h2>
+          </div>
+          <PlayerPortalFixtures playerId={currentUserId} />
+        </section>
+      )}
+
+      {/* Header for directory */}
+      <div className="border-b border-blue-800/40 pb-3">
+        <h2 className="text-lg font-black tracking-wide uppercase text-white flex items-center gap-2">
+          <Trophy className="w-5 h-5 text-[#e5b53e]" />
+          All Federation Competitions
+        </h2>
+      </div>
 
       {/* Competitions Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

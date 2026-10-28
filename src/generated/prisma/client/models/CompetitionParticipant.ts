@@ -28,10 +28,12 @@ export type AggregateCompetitionParticipant = {
 
 export type CompetitionParticipantAvgAggregateOutputType = {
   seed: number | null
+  knockoutSeed: number | null
 }
 
 export type CompetitionParticipantSumAggregateOutputType = {
   seed: number | null
+  knockoutSeed: number | null
 }
 
 export type CompetitionParticipantMinAggregateOutputType = {
@@ -44,6 +46,7 @@ export type CompetitionParticipantMinAggregateOutputType = {
   status: $Enums.ParticipantStatus | null
   groupName: string | null
   seed: number | null
+  knockoutSeed: number | null
 }
 
 export type CompetitionParticipantMaxAggregateOutputType = {
@@ -56,6 +59,7 @@ export type CompetitionParticipantMaxAggregateOutputType = {
   status: $Enums.ParticipantStatus | null
   groupName: string | null
   seed: number | null
+  knockoutSeed: number | null
 }
 
 export type CompetitionParticipantCountAggregateOutputType = {
@@ -68,16 +72,19 @@ export type CompetitionParticipantCountAggregateOutputType = {
   status: number
   groupName: number
   seed: number
+  knockoutSeed: number
   _all: number
 }
 
 
 export type CompetitionParticipantAvgAggregateInputType = {
   seed?: true
+  knockoutSeed?: true
 }
 
 export type CompetitionParticipantSumAggregateInputType = {
   seed?: true
+  knockoutSeed?: true
 }
 
 export type CompetitionParticipantMinAggregateInputType = {
@@ -90,6 +97,7 @@ export type CompetitionParticipantMinAggregateInputType = {
   status?: true
   groupName?: true
   seed?: true
+  knockoutSeed?: true
 }
 
 export type CompetitionParticipantMaxAggregateInputType = {
@@ -102,6 +110,7 @@ export type CompetitionParticipantMaxAggregateInputType = {
   status?: true
   groupName?: true
   seed?: true
+  knockoutSeed?: true
 }
 
 export type CompetitionParticipantCountAggregateInputType = {
@@ -114,6 +123,7 @@ export type CompetitionParticipantCountAggregateInputType = {
   status?: true
   groupName?: true
   seed?: true
+  knockoutSeed?: true
   _all?: true
 }
 
@@ -213,6 +223,7 @@ export type CompetitionParticipantGroupByOutputType = {
   status: $Enums.ParticipantStatus
   groupName: string | null
   seed: number | null
+  knockoutSeed: number | null
   _count: CompetitionParticipantCountAggregateOutputType | null
   _avg: CompetitionParticipantAvgAggregateOutputType | null
   _sum: CompetitionParticipantSumAggregateOutputType | null
@@ -248,6 +259,7 @@ export type CompetitionParticipantWhereInput = {
   status?: Prisma.EnumParticipantStatusFilter<"CompetitionParticipant"> | $Enums.ParticipantStatus
   groupName?: Prisma.StringNullableFilter<"CompetitionParticipant"> | string | null
   seed?: Prisma.IntNullableFilter<"CompetitionParticipant"> | number | null
+  knockoutSeed?: Prisma.IntNullableFilter<"CompetitionParticipant"> | number | null
   competition?: Prisma.XOR<Prisma.CompetitionScalarRelationFilter, Prisma.CompetitionWhereInput>
   player?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
   team?: Prisma.XOR<Prisma.TeamNullableScalarRelationFilter, Prisma.TeamWhereInput> | null
@@ -263,6 +275,7 @@ export type CompetitionParticipantOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   groupName?: Prisma.SortOrderInput | Prisma.SortOrder
   seed?: Prisma.SortOrderInput | Prisma.SortOrder
+  knockoutSeed?: Prisma.SortOrderInput | Prisma.SortOrder
   competition?: Prisma.CompetitionOrderByWithRelationInput
   player?: Prisma.PlayerOrderByWithRelationInput
   team?: Prisma.TeamOrderByWithRelationInput
@@ -282,6 +295,7 @@ export type CompetitionParticipantWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumParticipantStatusFilter<"CompetitionParticipant"> | $Enums.ParticipantStatus
   groupName?: Prisma.StringNullableFilter<"CompetitionParticipant"> | string | null
   seed?: Prisma.IntNullableFilter<"CompetitionParticipant"> | number | null
+  knockoutSeed?: Prisma.IntNullableFilter<"CompetitionParticipant"> | number | null
   competition?: Prisma.XOR<Prisma.CompetitionScalarRelationFilter, Prisma.CompetitionWhereInput>
   player?: Prisma.XOR<Prisma.PlayerScalarRelationFilter, Prisma.PlayerWhereInput>
   team?: Prisma.XOR<Prisma.TeamNullableScalarRelationFilter, Prisma.TeamWhereInput> | null
@@ -297,6 +311,7 @@ export type CompetitionParticipantOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   groupName?: Prisma.SortOrderInput | Prisma.SortOrder
   seed?: Prisma.SortOrderInput | Prisma.SortOrder
+  knockoutSeed?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CompetitionParticipantCountOrderByAggregateInput
   _avg?: Prisma.CompetitionParticipantAvgOrderByAggregateInput
   _max?: Prisma.CompetitionParticipantMaxOrderByAggregateInput
@@ -317,6 +332,7 @@ export type CompetitionParticipantScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumParticipantStatusWithAggregatesFilter<"CompetitionParticipant"> | $Enums.ParticipantStatus
   groupName?: Prisma.StringNullableWithAggregatesFilter<"CompetitionParticipant"> | string | null
   seed?: Prisma.IntNullableWithAggregatesFilter<"CompetitionParticipant"> | number | null
+  knockoutSeed?: Prisma.IntNullableWithAggregatesFilter<"CompetitionParticipant"> | number | null
 }
 
 export type CompetitionParticipantCreateInput = {
@@ -326,6 +342,7 @@ export type CompetitionParticipantCreateInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
   competition: Prisma.CompetitionCreateNestedOneWithoutParticipantsInput
   player: Prisma.PlayerCreateNestedOneWithoutCompetitionParticipantsInput
   team?: Prisma.TeamCreateNestedOneWithoutParticipantsInput
@@ -341,6 +358,7 @@ export type CompetitionParticipantUncheckedCreateInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
 }
 
 export type CompetitionParticipantUpdateInput = {
@@ -350,6 +368,7 @@ export type CompetitionParticipantUpdateInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   competition?: Prisma.CompetitionUpdateOneRequiredWithoutParticipantsNestedInput
   player?: Prisma.PlayerUpdateOneRequiredWithoutCompetitionParticipantsNestedInput
   team?: Prisma.TeamUpdateOneWithoutParticipantsNestedInput
@@ -365,6 +384,7 @@ export type CompetitionParticipantUncheckedUpdateInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type CompetitionParticipantCreateManyInput = {
@@ -377,6 +397,7 @@ export type CompetitionParticipantCreateManyInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
 }
 
 export type CompetitionParticipantUpdateManyMutationInput = {
@@ -386,6 +407,7 @@ export type CompetitionParticipantUpdateManyMutationInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type CompetitionParticipantUncheckedUpdateManyInput = {
@@ -398,6 +420,7 @@ export type CompetitionParticipantUncheckedUpdateManyInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type CompetitionParticipantListRelationFilter = {
@@ -425,10 +448,12 @@ export type CompetitionParticipantCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   groupName?: Prisma.SortOrder
   seed?: Prisma.SortOrder
+  knockoutSeed?: Prisma.SortOrder
 }
 
 export type CompetitionParticipantAvgOrderByAggregateInput = {
   seed?: Prisma.SortOrder
+  knockoutSeed?: Prisma.SortOrder
 }
 
 export type CompetitionParticipantMaxOrderByAggregateInput = {
@@ -441,6 +466,7 @@ export type CompetitionParticipantMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   groupName?: Prisma.SortOrder
   seed?: Prisma.SortOrder
+  knockoutSeed?: Prisma.SortOrder
 }
 
 export type CompetitionParticipantMinOrderByAggregateInput = {
@@ -453,10 +479,12 @@ export type CompetitionParticipantMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   groupName?: Prisma.SortOrder
   seed?: Prisma.SortOrder
+  knockoutSeed?: Prisma.SortOrder
 }
 
 export type CompetitionParticipantSumOrderByAggregateInput = {
   seed?: Prisma.SortOrder
+  knockoutSeed?: Prisma.SortOrder
 }
 
 export type CompetitionParticipantCreateNestedManyWithoutPlayerInput = {
@@ -596,6 +624,7 @@ export type CompetitionParticipantCreateWithoutPlayerInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
   competition: Prisma.CompetitionCreateNestedOneWithoutParticipantsInput
   team?: Prisma.TeamCreateNestedOneWithoutParticipantsInput
 }
@@ -609,6 +638,7 @@ export type CompetitionParticipantUncheckedCreateWithoutPlayerInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
 }
 
 export type CompetitionParticipantCreateOrConnectWithoutPlayerInput = {
@@ -650,6 +680,7 @@ export type CompetitionParticipantScalarWhereInput = {
   status?: Prisma.EnumParticipantStatusFilter<"CompetitionParticipant"> | $Enums.ParticipantStatus
   groupName?: Prisma.StringNullableFilter<"CompetitionParticipant"> | string | null
   seed?: Prisma.IntNullableFilter<"CompetitionParticipant"> | number | null
+  knockoutSeed?: Prisma.IntNullableFilter<"CompetitionParticipant"> | number | null
 }
 
 export type CompetitionParticipantCreateWithoutCompetitionInput = {
@@ -659,6 +690,7 @@ export type CompetitionParticipantCreateWithoutCompetitionInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
   player: Prisma.PlayerCreateNestedOneWithoutCompetitionParticipantsInput
   team?: Prisma.TeamCreateNestedOneWithoutParticipantsInput
 }
@@ -672,6 +704,7 @@ export type CompetitionParticipantUncheckedCreateWithoutCompetitionInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
 }
 
 export type CompetitionParticipantCreateOrConnectWithoutCompetitionInput = {
@@ -707,6 +740,7 @@ export type CompetitionParticipantCreateWithoutTeamInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
   competition: Prisma.CompetitionCreateNestedOneWithoutParticipantsInput
   player: Prisma.PlayerCreateNestedOneWithoutCompetitionParticipantsInput
 }
@@ -720,6 +754,7 @@ export type CompetitionParticipantUncheckedCreateWithoutTeamInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
 }
 
 export type CompetitionParticipantCreateOrConnectWithoutTeamInput = {
@@ -757,6 +792,7 @@ export type CompetitionParticipantCreateManyPlayerInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
 }
 
 export type CompetitionParticipantUpdateWithoutPlayerInput = {
@@ -766,6 +802,7 @@ export type CompetitionParticipantUpdateWithoutPlayerInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   competition?: Prisma.CompetitionUpdateOneRequiredWithoutParticipantsNestedInput
   team?: Prisma.TeamUpdateOneWithoutParticipantsNestedInput
 }
@@ -779,6 +816,7 @@ export type CompetitionParticipantUncheckedUpdateWithoutPlayerInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type CompetitionParticipantUncheckedUpdateManyWithoutPlayerInput = {
@@ -790,6 +828,7 @@ export type CompetitionParticipantUncheckedUpdateManyWithoutPlayerInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type CompetitionParticipantCreateManyCompetitionInput = {
@@ -801,6 +840,7 @@ export type CompetitionParticipantCreateManyCompetitionInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
 }
 
 export type CompetitionParticipantUpdateWithoutCompetitionInput = {
@@ -810,6 +850,7 @@ export type CompetitionParticipantUpdateWithoutCompetitionInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   player?: Prisma.PlayerUpdateOneRequiredWithoutCompetitionParticipantsNestedInput
   team?: Prisma.TeamUpdateOneWithoutParticipantsNestedInput
 }
@@ -823,6 +864,7 @@ export type CompetitionParticipantUncheckedUpdateWithoutCompetitionInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type CompetitionParticipantUncheckedUpdateManyWithoutCompetitionInput = {
@@ -834,6 +876,7 @@ export type CompetitionParticipantUncheckedUpdateManyWithoutCompetitionInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type CompetitionParticipantCreateManyTeamInput = {
@@ -845,6 +888,7 @@ export type CompetitionParticipantCreateManyTeamInput = {
   status?: $Enums.ParticipantStatus
   groupName?: string | null
   seed?: number | null
+  knockoutSeed?: number | null
 }
 
 export type CompetitionParticipantUpdateWithoutTeamInput = {
@@ -854,6 +898,7 @@ export type CompetitionParticipantUpdateWithoutTeamInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   competition?: Prisma.CompetitionUpdateOneRequiredWithoutParticipantsNestedInput
   player?: Prisma.PlayerUpdateOneRequiredWithoutCompetitionParticipantsNestedInput
 }
@@ -867,6 +912,7 @@ export type CompetitionParticipantUncheckedUpdateWithoutTeamInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type CompetitionParticipantUncheckedUpdateManyWithoutTeamInput = {
@@ -878,6 +924,7 @@ export type CompetitionParticipantUncheckedUpdateManyWithoutTeamInput = {
   status?: Prisma.EnumParticipantStatusFieldUpdateOperationsInput | $Enums.ParticipantStatus
   groupName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  knockoutSeed?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -892,6 +939,7 @@ export type CompetitionParticipantSelect<ExtArgs extends runtime.Types.Extension
   status?: boolean
   groupName?: boolean
   seed?: boolean
+  knockoutSeed?: boolean
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
   player?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
   team?: boolean | Prisma.CompetitionParticipant$teamArgs<ExtArgs>
@@ -907,6 +955,7 @@ export type CompetitionParticipantSelectCreateManyAndReturn<ExtArgs extends runt
   status?: boolean
   groupName?: boolean
   seed?: boolean
+  knockoutSeed?: boolean
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
   player?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
   team?: boolean | Prisma.CompetitionParticipant$teamArgs<ExtArgs>
@@ -922,6 +971,7 @@ export type CompetitionParticipantSelectUpdateManyAndReturn<ExtArgs extends runt
   status?: boolean
   groupName?: boolean
   seed?: boolean
+  knockoutSeed?: boolean
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
   player?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
   team?: boolean | Prisma.CompetitionParticipant$teamArgs<ExtArgs>
@@ -937,9 +987,10 @@ export type CompetitionParticipantSelectScalar = {
   status?: boolean
   groupName?: boolean
   seed?: boolean
+  knockoutSeed?: boolean
 }
 
-export type CompetitionParticipantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "competitionId" | "playerId" | "teamId" | "teamName" | "teamLogoUrl" | "status" | "groupName" | "seed", ExtArgs["result"]["competitionParticipant"]>
+export type CompetitionParticipantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "competitionId" | "playerId" | "teamId" | "teamName" | "teamLogoUrl" | "status" | "groupName" | "seed" | "knockoutSeed", ExtArgs["result"]["competitionParticipant"]>
 export type CompetitionParticipantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   competition?: boolean | Prisma.CompetitionDefaultArgs<ExtArgs>
   player?: boolean | Prisma.PlayerDefaultArgs<ExtArgs>
@@ -973,6 +1024,7 @@ export type $CompetitionParticipantPayload<ExtArgs extends runtime.Types.Extensi
     status: $Enums.ParticipantStatus
     groupName: string | null
     seed: number | null
+    knockoutSeed: number | null
   }, ExtArgs["result"]["competitionParticipant"]>
   composites: {}
 }
@@ -1408,6 +1460,7 @@ export interface CompetitionParticipantFieldRefs {
   readonly status: Prisma.FieldRef<"CompetitionParticipant", 'ParticipantStatus'>
   readonly groupName: Prisma.FieldRef<"CompetitionParticipant", 'String'>
   readonly seed: Prisma.FieldRef<"CompetitionParticipant", 'Int'>
+  readonly knockoutSeed: Prisma.FieldRef<"CompetitionParticipant", 'Int'>
 }
     
 

@@ -144,8 +144,15 @@ export const CompetitionScalarFieldEnum = {
   name: 'name',
   description: 'description',
   additionalInfo: 'additionalInfo',
+  startDate: 'startDate',
+  currentMatchday: 'currentMatchday',
   matchdayDurationHours: 'matchdayDurationHours',
   matchdayEndsAt: 'matchdayEndsAt',
+  roundRobinLegs: 'roundRobinLegs',
+  knockoutLegs: 'knockoutLegs',
+  groupCount: 'groupCount',
+  teamsPerGroup: 'teamsPerGroup',
+  qualifiersPerGroup: 'qualifiersPerGroup',
   type: 'type',
   format: 'format',
   status: 'status',
@@ -182,7 +189,8 @@ export const CompetitionParticipantScalarFieldEnum = {
   teamLogoUrl: 'teamLogoUrl',
   status: 'status',
   groupName: 'groupName',
-  seed: 'seed'
+  seed: 'seed',
+  knockoutSeed: 'knockoutSeed'
 } as const
 
 export type CompetitionParticipantScalarFieldEnum = (typeof CompetitionParticipantScalarFieldEnum)[keyof typeof CompetitionParticipantScalarFieldEnum]
@@ -195,6 +203,14 @@ export const MatchScalarFieldEnum = {
   awayPlayerId: 'awayPlayerId',
   homeScore: 'homeScore',
   awayScore: 'awayScore',
+  homePenalty: 'homePenalty',
+  awayPenalty: 'awayPenalty',
+  matchday: 'matchday',
+  scheduledAt: 'scheduledAt',
+  stage: 'stage',
+  bracketSlot: 'bracketSlot',
+  legNumber: 'legNumber',
+  isCompleted: 'isCompleted',
   playedAt: 'playedAt',
   resultEnteredBy: 'resultEnteredBy'
 } as const

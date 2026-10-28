@@ -25,6 +25,7 @@ export const revalidate = 10;
 
 interface StandingRow {
   position: number;
+  groupName?: string | null;
   player: {
     id: string;
     username: string;
@@ -99,6 +100,9 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
     const matchHistory: { playedAt: Date; result: "W" | "D" | "L" }[] = [];
 
     matches.forEach((m) => {
+      if (!m.isCompleted || m.homeScore === null || m.awayScore === null) return;
+      if (!m.homePlayerId || !m.awayPlayerId) return;
+
       const isHome = m.homePlayerId === p.id;
       const isAway = m.awayPlayerId === p.id;
 
@@ -110,15 +114,17 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
         goalsFor += myScore;
         goalsAgainst += oppScore;
 
+        const matchDate = m.playedAt || m.scheduledAt || new Date();
+
         if (myScore > oppScore) {
           wins += 1;
-          matchHistory.push({ playedAt: m.playedAt, result: "W" });
+          matchHistory.push({ playedAt: matchDate, result: "W" });
         } else if (myScore === oppScore) {
           draws += 1;
-          matchHistory.push({ playedAt: m.playedAt, result: "D" });
+          matchHistory.push({ playedAt: matchDate, result: "D" });
         } else {
           losses += 1;
-          matchHistory.push({ playedAt: m.playedAt, result: "L" });
+          matchHistory.push({ playedAt: matchDate, result: "L" });
         }
       }
     });
@@ -132,6 +138,7 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
 
     return {
       position: 0,
+      groupName: part.groupName,
       player: {
         id: p.id,
         username: p.username,
@@ -310,148 +317,260 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
 
         {/* 2-COLUMN LAYOUT: LEAGUE TABLE & FIXTURES */}
         <div className="space-y-10">
-          {/* Standings Table (FBref / Premier League style in White Card) */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between border-b border-blue-800/40 pb-3">
-              <h2 className="text-lg font-black tracking-wide uppercase text-white flex items-center gap-2">
-                <Medal className="w-5 h-5 text-[#e5b53e]" />
-                Official Tournament Standings
-              </h2>
-              <span className="text-xs text-blue-200 font-mono">
-                {competition.format.replace("_", " ")} Table
-              </span>
-            </div>
+          {/* Standings Table (Only for ROUND_ROBIN and GROUP_STAGE) */}
+          {competition.format !== "KNOCKOUT" && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between border-b border-blue-800/40 pb-3">
+                <h2 className="text-lg font-black tracking-wide uppercase text-white flex items-center gap-2">
+                  <Medal className="w-5 h-5 text-[#e5b53e]" />
+                  {competition.format === "GROUP_STAGE" ? "Group Stage Standings" : "Official League Standings"}
+                </h2>
+                <span className="text-xs text-blue-200 font-mono">
+                  {competition.format.replace("_", " ")} Table
+                </span>
+              </div>
 
-            <div className="bg-white text-slate-900 border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#0a1128] text-white uppercase tracking-wider text-[10px] border-b border-blue-900 font-black">
-                    <tr>
-                      <th className="py-3 px-3 text-center">Pos</th>
-                      <th className="py-3 px-3">Club / Competitor</th>
-                      <th className="py-3 px-2 text-center">Nat</th>
-                      <th className="py-3 px-2 text-center">P</th>
-                      <th className="py-3 px-2 text-center">W</th>
-                      <th className="py-3 px-2 text-center">D</th>
-                      <th className="py-3 px-2 text-center">L</th>
-                      <th className="py-3 px-2 text-center">GF</th>
-                      <th className="py-3 px-2 text-center">GA</th>
-                      <th className="py-3 px-2 text-center">GD</th>
-                      <th className="py-3 px-3 text-center font-black text-[#e5b53e]">Pts</th>
-                      <th className="py-3 px-3 text-center">Form</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium">
-                    {standings.length === 0 ? (
-                      <tr>
-                        <td colSpan={12} className="py-8 text-center text-slate-400">
-                          No approved participants in this tournament yet.
-                        </td>
-                      </tr>
-                    ) : (
-                      standings.map((row) => {
-                        const crestSrc = row.player.clubLogoUrl || row.player.avatarUrl || "/branding/default-crest.svg";
+              {competition.format === "GROUP_STAGE" ? (
+                <div className="space-y-6">
+                  {Array.from(
+                    new Set(standings.map((s) => s.groupName || "GROUP_A"))
+                  ).map((groupName) => {
+                    const groupRows = standings
+                      .filter((s) => (s.groupName || "GROUP_A") === groupName)
+                      .sort((a, b) => {
+                        if (b.points !== a.points) return b.points - a.points;
+                        if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
+                        if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
+                        return b.wins - a.wins;
+                      })
+                      .map((r, idx) => ({ ...r, position: idx + 1 }));
 
-                        return (
-                          <tr
-                            key={row.player.id}
-                            className="hover:bg-blue-50/60 transition group"
-                          >
-                            <td className="py-3 px-3 text-center font-bold font-mono text-slate-500">
-                              {row.position}
-                            </td>
-                            <td className="py-3 px-3">
-                              <Link
-                                href={`/player/${row.player.username}`}
-                                className="flex items-center gap-2.5 group"
-                              >
-                                <div className="w-6 h-6 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                  <Image
-                                    src={crestSrc}
-                                    alt={row.player.teamName}
-                                    width={20}
-                                    height={20}
-                                    className="w-5 h-5 object-contain"
-                                  />
-                                </div>
-                                <div>
-                                  <span className="font-bold text-[#0f172a] group-hover:text-[#00b4ff] transition block">
-                                    {row.player.teamName}
-                                  </span>
-                                  <span className="text-[10px] text-slate-400 font-mono">
-                                    @{row.player.username}
-                                  </span>
-                                </div>
-                              </Link>
-                            </td>
-                            <td className="py-3 px-2 text-center">
-                              <CountryFlag countryCode={row.player.nationality} size={16} />
-                            </td>
-                            <td className="py-3 px-2 text-center font-mono font-bold text-slate-700">
-                              {row.played}
-                            </td>
-                            <td className="py-3 px-2 text-center font-mono font-bold text-[#00c853]">
-                              {row.wins}
-                            </td>
-                            <td className="py-3 px-2 text-center font-mono text-slate-500">
-                              {row.draws}
-                            </td>
-                            <td className="py-3 px-2 text-center font-mono text-[#e90052]">
-                              {row.losses}
-                            </td>
-                            <td className="py-3 px-2 text-center font-mono text-slate-700">
-                              {row.goalsFor}
-                            </td>
-                            <td className="py-3 px-2 text-center font-mono text-slate-700">
-                              {row.goalsAgainst}
-                            </td>
-                            <td className="py-3 px-2 text-center font-mono font-bold">
-                              <span
-                                className={
-                                  row.goalDifference > 0
-                                    ? "text-[#00c853]"
-                                    : row.goalDifference < 0
-                                    ? "text-[#e90052]"
-                                    : "text-slate-600"
-                                }
-                              >
-                                {row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}
-                              </span>
-                            </td>
-                            <td className="py-3 px-3 text-center font-mono font-black text-sm text-blue-900">
-                              {row.points}
-                            </td>
-                            <td className="py-3 px-3 text-center">
-                              <div className="flex items-center justify-center gap-1">
-                                {row.form.length === 0 ? (
-                                  <span className="text-[10px] text-slate-400">-</span>
-                                ) : (
-                                  row.form.map((f, i) => (
-                                    <span
-                                      key={i}
-                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black ${
-                                        f === "W"
-                                          ? "bg-[#00c853] text-white"
-                                          : f === "D"
-                                          ? "bg-slate-400 text-white"
-                                          : "bg-[#e90052] text-white"
-                                      }`}
-                                    >
-                                      {f}
-                                    </span>
-                                  ))
-                                )}
-                              </div>
+                    return (
+                      <div key={groupName} className="space-y-2">
+                        <div className="px-4 py-2 bg-[#0d163a] rounded-xl border border-blue-900/40 flex items-center justify-between">
+                          <span className="font-black text-xs uppercase tracking-wider text-blue-300">
+                            {groupName.replace("_", " ")}
+                          </span>
+                        </div>
+                        <div className="bg-white text-slate-900 border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left text-xs">
+                              <thead className="bg-[#0a1128] text-white uppercase tracking-wider text-[10px] border-b border-blue-900 font-black">
+                                <tr>
+                                  <th className="py-3 px-3 text-center">Pos</th>
+                                  <th className="py-3 px-3">Club / Competitor</th>
+                                  <th className="py-3 px-2 text-center">Nat</th>
+                                  <th className="py-3 px-2 text-center">P</th>
+                                  <th className="py-3 px-2 text-center">W</th>
+                                  <th className="py-3 px-2 text-center">D</th>
+                                  <th className="py-3 px-2 text-center">L</th>
+                                  <th className="py-3 px-2 text-center">GF</th>
+                                  <th className="py-3 px-2 text-center">GA</th>
+                                  <th className="py-3 px-2 text-center">GD</th>
+                                  <th className="py-3 px-3 text-center font-black text-[#e5b53e]">Pts</th>
+                                  <th className="py-3 px-3 text-center">Form</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100 font-medium">
+                                {groupRows.map((row) => {
+                                  const crestSrc = row.player.clubLogoUrl || row.player.avatarUrl || "/branding/default-crest.svg";
+                                  return (
+                                    <tr key={row.player.id} className="hover:bg-blue-50/60 transition group">
+                                      <td className="py-3 px-3 text-center font-bold font-mono text-slate-500">
+                                        {row.position}
+                                      </td>
+                                      <td className="py-3 px-3">
+                                        <Link href={`/player/${row.player.username}`} className="flex items-center gap-2.5 group">
+                                          <div className="w-6 h-6 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                            <Image src={crestSrc} alt={row.player.teamName} width={20} height={20} className="w-5 h-5 object-contain" />
+                                          </div>
+                                          <div>
+                                            <span className="font-bold text-[#0f172a] group-hover:text-[#00b4ff] transition block">
+                                              {row.player.teamName}
+                                            </span>
+                                            <span className="text-[10px] text-slate-400 font-mono">
+                                              @{row.player.username}
+                                            </span>
+                                          </div>
+                                        </Link>
+                                      </td>
+                                      <td className="py-3 px-2 text-center">
+                                        <CountryFlag countryCode={row.player.nationality} size={16} />
+                                      </td>
+                                      <td className="py-3 px-2 text-center font-mono font-bold text-slate-700">{row.played}</td>
+                                      <td className="py-3 px-2 text-center font-mono font-bold text-[#00c853]">{row.wins}</td>
+                                      <td className="py-3 px-2 text-center font-mono text-slate-500">{row.draws}</td>
+                                      <td className="py-3 px-2 text-center font-mono text-[#e90052]">{row.losses}</td>
+                                      <td className="py-3 px-2 text-center font-mono text-slate-700">{row.goalsFor}</td>
+                                      <td className="py-3 px-2 text-center font-mono text-slate-700">{row.goalsAgainst}</td>
+                                      <td className="py-3 px-2 text-center font-mono font-bold">
+                                        <span className={row.goalDifference > 0 ? "text-[#00c853]" : row.goalDifference < 0 ? "text-[#e90052]" : "text-slate-600"}>
+                                          {row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}
+                                        </span>
+                                      </td>
+                                      <td className="py-3 px-3 text-center font-mono font-black text-sm text-blue-900">{row.points}</td>
+                                      <td className="py-3 px-3 text-center">
+                                        <div className="flex items-center justify-center gap-1">
+                                          {row.form.length === 0 ? (
+                                            <span className="text-[10px] text-slate-400">-</span>
+                                          ) : (
+                                            row.form.map((f, i) => (
+                                              <span
+                                                key={i}
+                                                className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black ${
+                                                  f === "W" ? "bg-[#00c853] text-white" : f === "D" ? "bg-slate-400 text-white" : "bg-[#e90052] text-white"
+                                                }`}
+                                              >
+                                                {f}
+                                              </span>
+                                            ))
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="bg-white text-slate-900 border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#0a1128] text-white uppercase tracking-wider text-[10px] border-b border-blue-900 font-black">
+                        <tr>
+                          <th className="py-3 px-3 text-center">Pos</th>
+                          <th className="py-3 px-3">Club / Competitor</th>
+                          <th className="py-3 px-2 text-center">Nat</th>
+                          <th className="py-3 px-2 text-center">P</th>
+                          <th className="py-3 px-2 text-center">W</th>
+                          <th className="py-3 px-2 text-center">D</th>
+                          <th className="py-3 px-2 text-center">L</th>
+                          <th className="py-3 px-2 text-center">GF</th>
+                          <th className="py-3 px-2 text-center">GA</th>
+                          <th className="py-3 px-2 text-center">GD</th>
+                          <th className="py-3 px-3 text-center font-black text-[#e5b53e]">Pts</th>
+                          <th className="py-3 px-3 text-center">Form</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium">
+                        {standings.length === 0 ? (
+                          <tr>
+                            <td colSpan={12} className="py-8 text-center text-slate-400">
+                              No approved participants in this tournament yet.
                             </td>
                           </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
+                        ) : (
+                          standings.map((row) => {
+                            const crestSrc = row.player.clubLogoUrl || row.player.avatarUrl || "/branding/default-crest.svg";
+
+                            return (
+                              <tr
+                                key={row.player.id}
+                                className="hover:bg-blue-50/60 transition group"
+                              >
+                                <td className="py-3 px-3 text-center font-bold font-mono text-slate-500">
+                                  {row.position}
+                                </td>
+                                <td className="py-3 px-3">
+                                  <Link
+                                    href={`/player/${row.player.username}`}
+                                    className="flex items-center gap-2.5 group"
+                                  >
+                                    <div className="w-6 h-6 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                      <Image
+                                        src={crestSrc}
+                                        alt={row.player.teamName}
+                                        width={20}
+                                        height={20}
+                                        className="w-5 h-5 object-contain"
+                                      />
+                                    </div>
+                                    <div>
+                                      <span className="font-bold text-[#0f172a] group-hover:text-[#00b4ff] transition block">
+                                        {row.player.teamName}
+                                      </span>
+                                      <span className="text-[10px] text-slate-400 font-mono">
+                                        @{row.player.username}
+                                      </span>
+                                    </div>
+                                  </Link>
+                                </td>
+                                <td className="py-3 px-2 text-center">
+                                  <CountryFlag countryCode={row.player.nationality} size={16} />
+                                </td>
+                                <td className="py-3 px-2 text-center font-mono font-bold text-slate-700">
+                                  {row.played}
+                                </td>
+                                <td className="py-3 px-2 text-center font-mono font-bold text-[#00c853]">
+                                  {row.wins}
+                                </td>
+                                <td className="py-3 px-2 text-center font-mono text-slate-500">
+                                  {row.draws}
+                                </td>
+                                <td className="py-3 px-2 text-center font-mono text-[#e90052]">
+                                  {row.losses}
+                                </td>
+                                <td className="py-3 px-2 text-center font-mono text-slate-700">
+                                  {row.goalsFor}
+                                </td>
+                                <td className="py-3 px-2 text-center font-mono text-slate-700">
+                                  {row.goalsAgainst}
+                                </td>
+                                <td className="py-3 px-2 text-center font-mono font-bold">
+                                  <span
+                                    className={
+                                      row.goalDifference > 0
+                                        ? "text-[#00c853]"
+                                        : row.goalDifference < 0
+                                        ? "text-[#e90052]"
+                                        : "text-slate-600"
+                                    }
+                                  >
+                                    {row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}
+                                  </span>
+                                </td>
+                                <td className="py-3 px-3 text-center font-mono font-black text-sm text-blue-900">
+                                  {row.points}
+                                </td>
+                                <td className="py-3 px-3 text-center">
+                                  <div className="flex items-center justify-center gap-1">
+                                    {row.form.length === 0 ? (
+                                      <span className="text-[10px] text-slate-400">-</span>
+                                    ) : (
+                                      row.form.map((f, i) => (
+                                        <span
+                                          key={i}
+                                          className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black ${
+                                            f === "W"
+                                              ? "bg-[#00c853] text-white"
+                                              : f === "D"
+                                              ? "bg-slate-400 text-white"
+                                              : "bg-[#e90052] text-white"
+                                          }`}
+                                        >
+                                          {f}
+                                        </span>
+                                      ))
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
 
           {/* Fixtures & Results Section */}
           <section className="space-y-4">
@@ -465,7 +584,11 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
               </span>
             </div>
 
-            <CompetitionFixtures matches={competition.matches} />
+            <CompetitionFixtures
+              matches={competition.matches}
+              format={competition.format}
+              knockoutLegs={competition.knockoutLegs}
+            />
           </section>
         </div>
       </main>

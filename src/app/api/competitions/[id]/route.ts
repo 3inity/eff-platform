@@ -57,7 +57,12 @@ export async function GET(
               },
             },
           },
-          orderBy: { playedAt: "desc" },
+          orderBy: [
+            { matchday: "asc" },
+            { scheduledAt: "asc" },
+            { bracketSlot: "asc" },
+            { playedAt: "desc" },
+          ],
         },
       },
     });
@@ -102,9 +107,13 @@ export async function GET(
       });
     }
 
-    // Process all played matches
-    // Note: matches are ordered desc by playedAt, so chronologically newest matches come first
+    // Process all played matches (only completed matches with scores)
     for (const match of competition.matches) {
+      if (!match.isCompleted || match.homeScore === null || match.awayScore === null) continue;
+      if (!match.homePlayerId || !match.awayPlayerId) continue;
+      // If competition is KNOCKOUT, standings are not applicable
+      if (competition.format === "KNOCKOUT") continue;
+
       const homeEntry = standingsMap.get(match.homePlayerId);
       const awayEntry = standingsMap.get(match.awayPlayerId);
 

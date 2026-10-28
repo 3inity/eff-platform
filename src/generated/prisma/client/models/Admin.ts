@@ -314,11 +314,6 @@ export type AdminNullableScalarRelationFilter = {
   isNot?: Prisma.AdminWhereInput | null
 }
 
-export type AdminScalarRelationFilter = {
-  is?: Prisma.AdminWhereInput
-  isNot?: Prisma.AdminWhereInput
-}
-
 export type AdminCreateNestedManyWithoutPlayerInput = {
   create?: Prisma.XOR<Prisma.AdminCreateWithoutPlayerInput, Prisma.AdminUncheckedCreateWithoutPlayerInput> | Prisma.AdminCreateWithoutPlayerInput[] | Prisma.AdminUncheckedCreateWithoutPlayerInput[]
   connectOrCreate?: Prisma.AdminCreateOrConnectWithoutPlayerInput | Prisma.AdminCreateOrConnectWithoutPlayerInput[]
@@ -387,10 +382,12 @@ export type AdminCreateNestedOneWithoutMatchesEnteredInput = {
   connect?: Prisma.AdminWhereUniqueInput
 }
 
-export type AdminUpdateOneRequiredWithoutMatchesEnteredNestedInput = {
+export type AdminUpdateOneWithoutMatchesEnteredNestedInput = {
   create?: Prisma.XOR<Prisma.AdminCreateWithoutMatchesEnteredInput, Prisma.AdminUncheckedCreateWithoutMatchesEnteredInput>
   connectOrCreate?: Prisma.AdminCreateOrConnectWithoutMatchesEnteredInput
   upsert?: Prisma.AdminUpsertWithoutMatchesEnteredInput
+  disconnect?: Prisma.AdminWhereInput | boolean
+  delete?: Prisma.AdminWhereInput | boolean
   connect?: Prisma.AdminWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUpdateToOneWithWhereWithoutMatchesEnteredInput, Prisma.AdminUpdateWithoutMatchesEnteredInput>, Prisma.AdminUncheckedUpdateWithoutMatchesEnteredInput>
 }

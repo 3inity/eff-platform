@@ -40,6 +40,27 @@ export async function PATCH(
         ...(body.badgeKey !== undefined && { badgeKey: body.badgeKey }),
         ...(body.status !== undefined && { status: body.status }),
         ...(body.isActive !== undefined && { isActive: Boolean(body.isActive) }),
+        ...(body.startDate !== undefined && {
+          startDate: body.startDate ? new Date(body.startDate) : null,
+        }),
+        ...(body.currentMatchday !== undefined && {
+          currentMatchday: body.currentMatchday ? parseInt(body.currentMatchday, 10) : 1,
+        }),
+        ...(body.roundRobinLegs !== undefined && {
+          roundRobinLegs: parseInt(body.roundRobinLegs, 10) || 1,
+        }),
+        ...(body.knockoutLegs !== undefined && {
+          knockoutLegs: parseInt(body.knockoutLegs, 10) || 1,
+        }),
+        ...(body.groupCount !== undefined && {
+          groupCount: body.groupCount ? parseInt(body.groupCount, 10) : null,
+        }),
+        ...(body.teamsPerGroup !== undefined && {
+          teamsPerGroup: body.teamsPerGroup ? parseInt(body.teamsPerGroup, 10) : null,
+        }),
+        ...(body.qualifiersPerGroup !== undefined && {
+          qualifiersPerGroup: body.qualifiersPerGroup ? parseInt(body.qualifiersPerGroup, 10) : null,
+        }),
         ...(body.registrationOpenAt !== undefined && {
           registrationOpenAt: body.registrationOpenAt ? new Date(body.registrationOpenAt) : null,
         }),

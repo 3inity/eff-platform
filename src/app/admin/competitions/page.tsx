@@ -49,6 +49,13 @@ interface Competition {
   registrationOpenAt: string | null;
   registrationCloseAt: string | null;
   maxParticipants: number | null;
+  startDate: string | null;
+  currentMatchday: number | null;
+  roundRobinLegs: number;
+  knockoutLegs: number;
+  groupCount: number | null;
+  teamsPerGroup: number | null;
+  qualifiersPerGroup: number | null;
   requiresApproval: boolean;
   registeredCount?: number;
   matchCount?: number;
@@ -62,6 +69,8 @@ interface Participant {
   teamLogoUrl: string | null;
   team?: TeamItem | null;
   status: "PENDING" | "APPROVED" | "REJECTED" | "WITHDRAWN";
+  groupName?: string | null;
+  knockoutSeed?: number | null;
   player: {
     id: string;
     username: string;
@@ -84,9 +93,18 @@ export default function AdminCompetitionsPage() {
   const [selectedComp, setSelectedComp] = useState<Competition | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [teams, setTeams] = useState<TeamItem[]>([]);
+  const [matches, setMatches] = useState<any[]>([]);
   const [allPlayers, setAllPlayers] = useState<PlayerOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
+
+  // Result entry modal state
+  const [resultModalOpen, setResultModalOpen] = useState(false);
+  const [selectedMatchForResult, setSelectedMatchForResult] = useState<any | null>(null);
+  const [scoreHome, setScoreHome] = useState("");
+  const [scoreAway, setScoreAway] = useState("");
+  const [penHome, setPenHome] = useState("");
+  const [penAway, setPenAway] = useState("");
 
   // Create modal state
   const [createOpen, setCreateOpen] = useState(false);
@@ -104,6 +122,12 @@ export default function AdminCompetitionsPage() {
   const [formFormat, setFormFormat] = useState<"ROUND_ROBIN" | "KNOCKOUT" | "GROUP_STAGE">("ROUND_ROBIN");
   const [formSeason, setFormSeason] = useState("Season 1");
   const [formStatus, setFormStatus] = useState<Competition["status"]>("REGISTRATION_OPEN");
+  const [formStartDate, setFormStartDate] = useState("");
+  const [formRoundRobinLegs, setFormRoundRobinLegs] = useState("1");
+  const [formKnockoutLegs, setFormKnockoutLegs] = useState("1");
+  const [formGroupCount, setFormGroupCount] = useState("2");
+  const [formTeamsPerGroup, setFormTeamsPerGroup] = useState("4");
+  const [formQualifiersPerGroup, setFormQualifiersPerGroup] = useState("2");
   const [formRegOpenAt, setFormRegOpenAt] = useState(new Date().toISOString().slice(0, 16));
   const [formRegCloseAt, setFormRegCloseAt] = useState("");
   const [formMaxParticipants, setFormMaxParticipants] = useState("10");
@@ -193,10 +217,164 @@ export default function AdminCompetitionsPage() {
       setSelectedComp(compData.competition || comp);
       setParticipants(partData.participants || compData.participants || []);
       setTeams(partData.teams || []);
+      setMatches(compData.matches || compData.competition?.matches || []);
     } catch (err) {
       console.error("Error loading competition details:", err);
     } finally {
       setDetailLoading(false);
+    }
+  };
+
+  const handleGenerateFixtures = async () => {
+    if (!selectedComp) return;
+    if (!confirm(`Generate fixtures for ${selectedComp.name}?`)) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/admin/competitions/${selectedComp.id}/generate-fixtures`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to generate fixtures.");
+      alert(`Successfully generated ${data.matchesCount} fixtures across ${data.rounds} matchdays!`);
+      await selectCompetition(selectedComp);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Failed to generate fixtures.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGenerateKnockout = async () => {
+    if (!selectedComp) return;
+    if (!confirm(`Generate knockout bracket for ${selectedComp.name}?`)) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/admin/competitions/${selectedComp.id}/generate-knockout`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to generate knockout bracket.");
+      alert(`Successfully generated knockout bracket with ${data.matchesCount} matches!`);
+      await selectCompetition(selectedComp);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Failed to generate knockout bracket.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDrawGroups = async () => {
+    if (!selectedComp) return;
+    const gCount = selectedComp.groupCount || 2;
+    const tPerGroup = selectedComp.teamsPerGroup || 4;
+    if (!confirm(`Draw groups with ${gCount} groups and ${tPerGroup} teams per group?`)) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/admin/competitions/${selectedComp.id}/draw-groups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ groupCount: gCount, teamsPerGroup: tPerGroup }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to draw groups.");
+      alert(`Successfully drew ${data.groupCount} groups and generated ${data.matchesCount} group stage fixtures!`);
+      await selectCompetition(selectedComp);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Failed to draw groups.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleQualifyKnockout = async () => {
+    if (!selectedComp) return;
+    const qCount = selectedComp.qualifiersPerGroup || 2;
+    if (!confirm(`Advance top ${qCount} teams from each group to the knockout bracket?`)) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/admin/competitions/${selectedComp.id}/qualify-knockout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ qualifiersPerGroup: qCount }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to qualify teams.");
+      alert(`Successfully advanced ${data.qualifiedCount} teams and created ${data.matchesCount} knockout matches!`);
+      await selectCompetition(selectedComp);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Failed to qualify teams to knockout.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteAllFixtures = async () => {
+    if (!selectedComp) return;
+    if (
+      !confirm(
+        `Are you sure you want to delete ALL fixtures for "${selectedComp.name}"?\n\nThis will remove all generated matches and reset tournament bracket progress. This action cannot be undone.`
+      )
+    ) {
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/admin/competitions/${selectedComp.id}/fixtures`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete fixtures.");
+      alert(data.message || "All fixtures deleted successfully.");
+      await selectCompetition(selectedComp);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Failed to delete fixtures.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const openResultModal = (match: any) => {
+    setSelectedMatchForResult(match);
+    setScoreHome(match.homeScore !== null && match.homeScore !== undefined ? String(match.homeScore) : "");
+    setScoreAway(match.awayScore !== null && match.awayScore !== undefined ? String(match.awayScore) : "");
+    setPenHome(match.homePenalty !== null && match.homePenalty !== undefined ? String(match.homePenalty) : "");
+    setPenAway(match.awayPenalty !== null && match.awayPenalty !== undefined ? String(match.awayPenalty) : "");
+    setResultModalOpen(true);
+  };
+
+  const handleSaveResult = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedMatchForResult || !selectedComp) return;
+    if (scoreHome === "" || scoreAway === "") {
+      alert("Please enter both home and away scores.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/matches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          matchId: selectedMatchForResult.id,
+          competitionId: selectedComp.id,
+          homeScore: parseInt(scoreHome, 10),
+          awayScore: parseInt(scoreAway, 10),
+          homePenalty: penHome !== "" ? parseInt(penHome, 10) : null,
+          awayPenalty: penAway !== "" ? parseInt(penAway, 10) : null,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to record match result.");
+
+      setResultModalOpen(false);
+      setSelectedMatchForResult(null);
+      await selectCompetition(selectedComp);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Failed to save match result.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -280,6 +458,12 @@ export default function AdminCompetitionsPage() {
     setFormFormat("ROUND_ROBIN");
     setFormSeason("Season 1");
     setFormStatus("REGISTRATION_OPEN");
+    setFormStartDate(new Date().toISOString().slice(0, 16));
+    setFormRoundRobinLegs("1");
+    setFormKnockoutLegs("1");
+    setFormGroupCount("2");
+    setFormTeamsPerGroup("4");
+    setFormQualifiersPerGroup("2");
     setFormRegOpenAt(new Date().toISOString().slice(0, 16));
     setFormRegCloseAt("");
     setFormMaxParticipants("10");
@@ -303,6 +487,14 @@ export default function AdminCompetitionsPage() {
     setFormFormat(comp.format);
     setFormSeason(comp.season);
     setFormStatus(comp.status);
+    setFormStartDate(
+      comp.startDate ? new Date(comp.startDate).toISOString().slice(0, 16) : ""
+    );
+    setFormRoundRobinLegs(String(comp.roundRobinLegs || 1));
+    setFormKnockoutLegs(String(comp.knockoutLegs || 1));
+    setFormGroupCount(String(comp.groupCount || 2));
+    setFormTeamsPerGroup(String(comp.teamsPerGroup || 4));
+    setFormQualifiersPerGroup(String(comp.qualifiersPerGroup || 2));
     setFormRegOpenAt(
       comp.registrationOpenAt ? new Date(comp.registrationOpenAt).toISOString().slice(0, 16) : ""
     );
@@ -344,6 +536,12 @@ export default function AdminCompetitionsPage() {
           format: formFormat,
           season: formSeason,
           status: formStatus,
+          startDate: formStartDate ? new Date(formStartDate).toISOString() : null,
+          roundRobinLegs: parseInt(formRoundRobinLegs, 10) || 1,
+          knockoutLegs: parseInt(formKnockoutLegs, 10) || 1,
+          groupCount: formFormat === "GROUP_STAGE" ? parseInt(formGroupCount, 10) || null : null,
+          teamsPerGroup: formFormat === "GROUP_STAGE" ? parseInt(formTeamsPerGroup, 10) || null : null,
+          qualifiersPerGroup: formFormat === "GROUP_STAGE" ? parseInt(formQualifiersPerGroup, 10) || null : null,
           registrationOpenAt: formRegOpenAt ? new Date(formRegOpenAt).toISOString() : null,
           registrationCloseAt: formRegCloseAt ? new Date(formRegCloseAt).toISOString() : null,
           maxParticipants: formMaxParticipants ? parseInt(formMaxParticipants, 10) : null,
@@ -394,6 +592,12 @@ export default function AdminCompetitionsPage() {
           format: formFormat,
           season: formSeason,
           status: formStatus,
+          startDate: formStartDate ? new Date(formStartDate).toISOString() : null,
+          roundRobinLegs: parseInt(formRoundRobinLegs, 10) || 1,
+          knockoutLegs: parseInt(formKnockoutLegs, 10) || 1,
+          groupCount: formFormat === "GROUP_STAGE" ? parseInt(formGroupCount, 10) || null : null,
+          teamsPerGroup: formFormat === "GROUP_STAGE" ? parseInt(formTeamsPerGroup, 10) || null : null,
+          qualifiersPerGroup: formFormat === "GROUP_STAGE" ? parseInt(formQualifiersPerGroup, 10) || null : null,
           registrationOpenAt: formRegOpenAt ? new Date(formRegOpenAt).toISOString() : null,
           registrationCloseAt: formRegCloseAt ? new Date(formRegCloseAt).toISOString() : null,
           maxParticipants: formMaxParticipants ? parseInt(formMaxParticipants, 10) : null,
@@ -950,6 +1154,221 @@ export default function AdminCompetitionsPage() {
                   </div>
                 )}
               </div>
+
+              {/* Fixtures & Tournament Bracket Section */}
+              <div className="p-6 bg-slate-50 border-t border-gray-200 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-black text-sm uppercase tracking-wider text-gray-900">
+                        Fixtures & Match Schedule ({matches.length})
+                      </h3>
+                      {selectedComp.currentMatchday && (
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-900 font-black text-[10px] rounded-full uppercase">
+                          Matchday {selectedComp.currentMatchday}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Manage kickoff schedules, automated brackets, and record official results.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    {matches.length === 0 && selectedComp.status === "IN_PROGRESS" && (
+                      <>
+                        {selectedComp.format === "ROUND_ROBIN" && (
+                          <button
+                            onClick={handleGenerateFixtures}
+                            disabled={submitting}
+                            className="px-3.5 py-1.5 bg-[#00c853] hover:bg-emerald-400 text-white rounded-lg text-xs font-black uppercase tracking-wider transition flex items-center gap-1 shadow-sm disabled:opacity-50"
+                          >
+                            <Play className="w-3.5 h-3.5 fill-current" /> Generate Fixtures
+                          </button>
+                        )}
+                        {selectedComp.format === "KNOCKOUT" && (
+                          <button
+                            onClick={handleGenerateKnockout}
+                            disabled={submitting}
+                            className="px-3.5 py-1.5 bg-[#00c853] hover:bg-emerald-400 text-white rounded-lg text-xs font-black uppercase tracking-wider transition flex items-center gap-1 shadow-sm disabled:opacity-50"
+                          >
+                            <Play className="w-3.5 h-3.5 fill-current" /> Generate Bracket
+                          </button>
+                        )}
+                        {selectedComp.format === "GROUP_STAGE" && (
+                          <button
+                            onClick={handleDrawGroups}
+                            disabled={submitting}
+                            className="px-3.5 py-1.5 bg-[#00c853] hover:bg-emerald-400 text-white rounded-lg text-xs font-black uppercase tracking-wider transition flex items-center gap-1 shadow-sm disabled:opacity-50"
+                          >
+                            <Play className="w-3.5 h-3.5 fill-current" /> Draw Groups & Fixtures
+                          </button>
+                        )}
+                      </>
+                    )}
+
+                    {matches.length > 0 && selectedComp.format === "GROUP_STAGE" && (
+                      <button
+                        onClick={handleQualifyKnockout}
+                        disabled={submitting}
+                        className="px-3.5 py-1.5 bg-[#00b4ff] hover:bg-sky-400 text-[#0a1128] rounded-lg text-xs font-black uppercase tracking-wider transition flex items-center gap-1 shadow-sm disabled:opacity-50"
+                      >
+                        <Trophy className="w-3.5 h-3.5" /> Qualify to Knockout
+                      </button>
+                    )}
+
+                    {matches.length > 0 && (
+                      <button
+                        onClick={handleDeleteAllFixtures}
+                        disabled={submitting}
+                        className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-bold transition flex items-center gap-1 disabled:opacity-50"
+                        title="Delete all generated matches"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Reset Fixtures
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {matches.length === 0 ? (
+                  <div className="p-8 text-center text-gray-400 bg-white rounded-2xl border border-dashed border-gray-300">
+                    <Calendar className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                    <p className="text-xs font-bold text-gray-600">No fixtures generated yet.</p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">
+                      {selectedComp.status === "IN_PROGRESS"
+                        ? "Click the button above to generate the tournament fixtures and matchdays."
+                        : "Tournament must be IN_PROGRESS with approved participants before generating fixtures."}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Render matches grouped by matchday or stage */}
+                    {Array.from(
+                      new Set(
+                        matches.map((m) =>
+                          m.stage ? m.stage : m.matchday ? `Matchday ${m.matchday}` : "Other Matches"
+                        )
+                      )
+                    ).map((groupTitle) => {
+                      const groupMatches = matches.filter(
+                        (m) =>
+                          (m.stage ? m.stage : m.matchday ? `Matchday ${m.matchday}` : "Other Matches") ===
+                          groupTitle
+                      );
+
+                      return (
+                        <div key={groupTitle} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-xs">
+                          <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                            <span className="font-black text-xs uppercase tracking-wider text-gray-800">
+                              {groupTitle.replace("_", " ")}
+                            </span>
+                            <span className="text-[10px] text-gray-400 font-bold">
+                              {groupMatches.length} {groupMatches.length === 1 ? "fixture" : "fixtures"}
+                            </span>
+                          </div>
+
+                          <div className="divide-y divide-gray-100">
+                            {groupMatches.map((m) => {
+                              const homeName = m.homePlayer?.username ? `@${m.homePlayer.username}` : "TBD";
+                              const awayName = m.awayPlayer?.username ? `@${m.awayPlayer.username}` : "TBD";
+                              const homeClub = m.homePlayer?.teamName || "Club TBD";
+                              const awayClub = m.awayPlayer?.teamName || "Club TBD";
+                              const isPlayed = m.isCompleted;
+
+                              return (
+                                <div
+                                  key={m.id}
+                                  className="p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-blue-50/20 transition"
+                                >
+                                  {/* Match Details */}
+                                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
+                                    {/* Home Team */}
+                                    <div className="sm:col-span-5 flex items-center justify-start sm:justify-end gap-2 text-right">
+                                      <div>
+                                        <span className={`text-xs block font-bold ${isPlayed && m.homeScore > m.awayScore ? "text-emerald-700 font-black" : "text-gray-900"}`}>
+                                          {homeName}
+                                        </span>
+                                        <span className="text-[10px] text-gray-400 font-semibold block">
+                                          {homeClub}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Score / VS Display */}
+                                    <div className="sm:col-span-2 text-center py-1 sm:py-0">
+                                      {isPlayed ? (
+                                        <div className="inline-flex flex-col items-center">
+                                          <div className="px-3 py-1 bg-gray-900 text-white rounded-lg font-black text-xs tracking-widest shadow-xs">
+                                            {m.homeScore} - {m.awayScore}
+                                          </div>
+                                          {m.homePenalty !== null && m.awayPenalty !== null && (
+                                            <span className="text-[9px] text-amber-700 font-black mt-0.5">
+                                              (Pen: {m.homePenalty} - {m.awayPenalty})
+                                            </span>
+                                          )}
+                                        </div>
+                                      ) : (
+                                        <span className="px-2.5 py-1 bg-gray-100 text-gray-500 rounded-md font-black text-[11px] uppercase tracking-wider">
+                                          VS
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Away Team */}
+                                    <div className="sm:col-span-5 flex items-center justify-start gap-2 text-left">
+                                      <div>
+                                        <span className={`text-xs block font-bold ${isPlayed && m.awayScore > m.homeScore ? "text-emerald-700 font-black" : "text-gray-900"}`}>
+                                          {awayName}
+                                        </span>
+                                        <span className="text-[10px] text-gray-400 font-semibold block">
+                                          {awayClub}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Schedule & Action */}
+                                  <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-0 border-gray-100">
+                                    <div className="text-left sm:text-right">
+                                      <span className="text-[10px] font-bold text-gray-500 block">
+                                        {m.scheduledAt
+                                          ? new Date(m.scheduledAt).toLocaleString([], {
+                                              month: "short",
+                                              day: "numeric",
+                                              hour: "2-digit",
+                                              minute: "2-digit",
+                                            })
+                                          : "Scheduled date TBD"}
+                                      </span>
+                                      {m.legNumber && (
+                                        <span className="text-[9px] font-black uppercase text-blue-600 block">
+                                          Leg {m.legNumber}
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    <button
+                                      onClick={() => openResultModal(m)}
+                                      disabled={!m.homePlayerId || !m.awayPlayerId}
+                                      className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition ${
+                                        isPlayed
+                                          ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                                          : "bg-[#00b4ff] hover:bg-[#009bdc] text-[#0a1128] shadow-xs"
+                                      } disabled:opacity-30 disabled:cursor-not-allowed`}
+                                    >
+                                      {isPlayed ? "Edit Score" : "Enter Result"}
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="p-12 text-center text-gray-400 bg-[#0d163a] rounded-2xl border border-blue-900/40">
@@ -1067,6 +1486,15 @@ export default function AdminCompetitionsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <label className="block text-gray-700 font-bold mb-1">Competition Start Date</label>
+                  <input
+                    type="datetime-local"
+                    value={formStartDate}
+                    onChange={(e) => setFormStartDate(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  />
+                </div>
+                <div>
                   <label className="block text-gray-700 font-bold mb-1">Matchday Duration (Hours)</label>
                   <input
                     type="number"
@@ -1075,16 +1503,78 @@ export default function AdminCompetitionsPage() {
                     className="w-full px-3 py-2 border rounded-lg"
                   />
                 </div>
+              </div>
+
+              {/* Legs Configuration */}
+              <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 border rounded-xl">
                 <div>
-                  <label className="block text-gray-700 font-bold mb-1">Matchday Ends At</label>
-                  <input
-                    type="datetime-local"
-                    value={formMatchdayEndsAt}
-                    onChange={(e) => setFormMatchdayEndsAt(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  />
+                  <label className="block text-gray-700 font-bold mb-1">
+                    Round-Robin Legs
+                  </label>
+                  <select
+                    value={formRoundRobinLegs}
+                    onChange={(e) => setFormRoundRobinLegs(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg bg-white"
+                  >
+                    <option value="1">Single Round-Robin (1 Leg)</option>
+                    <option value="2">Double Round-Robin (2 Legs - Home & Away)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-bold mb-1">
+                    Knockout Ties
+                  </label>
+                  <select
+                    value={formKnockoutLegs}
+                    onChange={(e) => setFormKnockoutLegs(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg bg-white"
+                  >
+                    <option value="1">Single-Leg Ties</option>
+                    <option value="2">Two-Leg Ties (Aggregate & Away Goals)</option>
+                  </select>
                 </div>
               </div>
+
+              {/* Group Stage Setup (Conditional) */}
+              {formFormat === "GROUP_STAGE" && (
+                <div className="p-3 bg-blue-50/60 border border-blue-200 rounded-xl space-y-2">
+                  <span className="block text-[11px] font-black uppercase text-blue-900 tracking-wider">
+                    Group Stage Configuration
+                  </span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-1">Group Count</label>
+                      <input
+                        type="number"
+                        min="2"
+                        value={formGroupCount}
+                        onChange={(e) => setFormGroupCount(e.target.value)}
+                        className="w-full px-3 py-1.5 border rounded-lg bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-1">Teams Per Group</label>
+                      <input
+                        type="number"
+                        min="2"
+                        value={formTeamsPerGroup}
+                        onChange={(e) => setFormTeamsPerGroup(e.target.value)}
+                        className="w-full px-3 py-1.5 border rounded-lg bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-1">Qualifiers / Group</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={formQualifiersPerGroup}
+                        onChange={(e) => setFormQualifiersPerGroup(e.target.value)}
+                        className="w-full px-3 py-1.5 border rounded-lg bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -1232,6 +1722,15 @@ export default function AdminCompetitionsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <label className="block text-gray-700 font-bold mb-1">Competition Start Date</label>
+                  <input
+                    type="datetime-local"
+                    value={formStartDate}
+                    onChange={(e) => setFormStartDate(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  />
+                </div>
+                <div>
                   <label className="block text-gray-700 font-bold mb-1">Matchday Duration (Hours)</label>
                   <input
                     type="number"
@@ -1240,16 +1739,78 @@ export default function AdminCompetitionsPage() {
                     className="w-full px-3 py-2 border rounded-lg"
                   />
                 </div>
+              </div>
+
+              {/* Legs Configuration */}
+              <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 border rounded-xl">
                 <div>
-                  <label className="block text-gray-700 font-bold mb-1">Matchday Ends At</label>
-                  <input
-                    type="datetime-local"
-                    value={formMatchdayEndsAt}
-                    onChange={(e) => setFormMatchdayEndsAt(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  />
+                  <label className="block text-gray-700 font-bold mb-1">
+                    Round-Robin Legs
+                  </label>
+                  <select
+                    value={formRoundRobinLegs}
+                    onChange={(e) => setFormRoundRobinLegs(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg bg-white"
+                  >
+                    <option value="1">Single Round-Robin (1 Leg)</option>
+                    <option value="2">Double Round-Robin (2 Legs - Home & Away)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-bold mb-1">
+                    Knockout Ties
+                  </label>
+                  <select
+                    value={formKnockoutLegs}
+                    onChange={(e) => setFormKnockoutLegs(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg bg-white"
+                  >
+                    <option value="1">Single-Leg Ties</option>
+                    <option value="2">Two-Leg Ties (Aggregate & Away Goals)</option>
+                  </select>
                 </div>
               </div>
+
+              {/* Group Stage Setup (Conditional) */}
+              {formFormat === "GROUP_STAGE" && (
+                <div className="p-3 bg-blue-50/60 border border-blue-200 rounded-xl space-y-2">
+                  <span className="block text-[11px] font-black uppercase text-blue-900 tracking-wider">
+                    Group Stage Configuration
+                  </span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-1">Group Count</label>
+                      <input
+                        type="number"
+                        min="2"
+                        value={formGroupCount}
+                        onChange={(e) => setFormGroupCount(e.target.value)}
+                        className="w-full px-3 py-1.5 border rounded-lg bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-1">Teams Per Group</label>
+                      <input
+                        type="number"
+                        min="2"
+                        value={formTeamsPerGroup}
+                        onChange={(e) => setFormTeamsPerGroup(e.target.value)}
+                        className="w-full px-3 py-1.5 border rounded-lg bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-bold mb-1">Qualifiers / Group</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={formQualifiersPerGroup}
+                        onChange={(e) => setFormQualifiersPerGroup(e.target.value)}
+                        className="w-full px-3 py-1.5 border rounded-lg bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -1510,6 +2071,148 @@ export default function AdminCompetitionsPage() {
                   className="px-5 py-2 bg-[#0a1128] text-white font-bold rounded-lg hover:bg-[#1a237e] transition disabled:opacity-50"
                 >
                   {submitting ? "Saving..." : "Create Team"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ENTER MATCH RESULT MODAL */}
+      {resultModalOpen && selectedMatchForResult && selectedComp && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white text-gray-900 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b">
+              <div>
+                <h3 className="font-black text-base uppercase tracking-tight text-gray-900">
+                  Record Match Result
+                </h3>
+                <span className="text-[11px] text-gray-500 font-bold">
+                  {selectedMatchForResult.stage
+                    ? selectedMatchForResult.stage.replace("_", " ")
+                    : selectedMatchForResult.matchday
+                    ? `Matchday ${selectedMatchForResult.matchday}`
+                    : "Fixture"}
+                  {selectedMatchForResult.legNumber ? ` • Leg ${selectedMatchForResult.legNumber}` : ""}
+                </span>
+              </div>
+              <button onClick={() => setResultModalOpen(false)} className="text-gray-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveResult} className="space-y-5 mt-4 text-xs font-semibold">
+              {/* Matchup Header */}
+              <div className="p-4 bg-slate-50 border rounded-xl flex items-center justify-between text-center">
+                <div className="flex-1">
+                  <span className="text-xs font-black block text-gray-900">
+                    @{selectedMatchForResult.homePlayer?.username || "TBD"}
+                  </span>
+                  <span className="text-[10px] text-gray-400 block font-semibold">
+                    {selectedMatchForResult.homePlayer?.teamName || "Club"}
+                  </span>
+                </div>
+                <span className="px-2 py-1 bg-gray-200 text-gray-600 rounded text-[10px] font-black uppercase">
+                  VS
+                </span>
+                <div className="flex-1">
+                  <span className="text-xs font-black block text-gray-900">
+                    @{selectedMatchForResult.awayPlayer?.username || "TBD"}
+                  </span>
+                  <span className="text-[10px] text-gray-400 block font-semibold">
+                    {selectedMatchForResult.awayPlayer?.teamName || "Club"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Score Inputs */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2 text-center uppercase tracking-wider text-[11px]">
+                  Final Score (Normal / Extra Time)
+                </label>
+                <div className="grid grid-cols-2 gap-4 items-center">
+                  <div>
+                    <label className="block text-gray-500 font-bold text-[10px] mb-1">
+                      {selectedMatchForResult.homePlayer?.username || "Home"} Score *
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      required
+                      value={scoreHome}
+                      onChange={(e) => setScoreHome(e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg text-center text-lg font-black"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold text-[10px] mb-1">
+                      {selectedMatchForResult.awayPlayer?.username || "Away"} Score *
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      required
+                      value={scoreAway}
+                      onChange={(e) => setScoreAway(e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg text-center text-lg font-black"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Penalty Shootout Inputs (Optional / Knockout) */}
+              {(selectedComp.format === "KNOCKOUT" || selectedMatchForResult.stage) && (
+                <div className="p-3 bg-amber-50/60 border border-amber-200 rounded-xl space-y-2">
+                  <span className="block text-[11px] font-black uppercase text-amber-900 tracking-wider">
+                    Penalty Shootout (If Tied on Aggregate)
+                  </span>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-600 font-bold text-[10px] mb-1">
+                        Home Penalties
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={penHome}
+                        onChange={(e) => setPenHome(e.target.value)}
+                        className="w-full px-3 py-1.5 border rounded-lg text-center font-bold bg-white"
+                        placeholder="Optional"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-600 font-bold text-[10px] mb-1">
+                        Away Penalties
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={penAway}
+                        onChange={(e) => setPenAway(e.target.value)}
+                        className="w-full px-3 py-1.5 border rounded-lg text-center font-bold bg-white"
+                        placeholder="Optional"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-3 border-t flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setResultModalOpen(false)}
+                  className="px-4 py-2 border rounded-lg text-gray-600 font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-5 py-2 bg-[#00c853] hover:bg-emerald-500 text-white font-black uppercase tracking-wider rounded-lg transition disabled:opacity-50 shadow-md"
+                >
+                  {submitting ? "Saving..." : "Confirm & Save"}
                 </button>
               </div>
             </form>

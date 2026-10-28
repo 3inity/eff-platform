@@ -39,6 +39,7 @@ export async function analyzeMatch(homeId: string, awayId: string): Promise<Anal
     prisma.player.findUnique({ where: { id: awayId } }),
     prisma.match.findMany({
       where: {
+        isCompleted: true,
         OR: [
           { homePlayerId: homeId, awayPlayerId: awayId },
           { homePlayerId: awayId, awayPlayerId: homeId },
@@ -48,6 +49,7 @@ export async function analyzeMatch(homeId: string, awayId: string): Promise<Anal
     }),
     prisma.match.findMany({
       where: {
+        isCompleted: true,
         OR: [{ homePlayerId: homeId }, { awayPlayerId: homeId }],
       },
       orderBy: { playedAt: "desc" },
@@ -55,6 +57,7 @@ export async function analyzeMatch(homeId: string, awayId: string): Promise<Anal
     }),
     prisma.match.findMany({
       where: {
+        isCompleted: true,
         OR: [{ homePlayerId: awayId }, { awayPlayerId: awayId }],
       },
       orderBy: { playedAt: "desc" },
@@ -70,8 +73,8 @@ export async function analyzeMatch(homeId: string, awayId: string): Promise<Anal
   const getForm = (playerId: string, matches: typeof homeRecentMatches): ("W" | "D" | "L")[] => {
     return matches.map((m) => {
       const isHome = m.homePlayerId === playerId;
-      const myScore = isHome ? m.homeScore : m.awayScore;
-      const oppScore = isHome ? m.awayScore : m.homeScore;
+      const myScore = (isHome ? m.homeScore : m.awayScore) ?? 0;
+      const oppScore = (isHome ? m.awayScore : m.homeScore) ?? 0;
       if (myScore > oppScore) return "W";
       if (myScore < oppScore) return "L";
       return "D";
@@ -98,11 +101,13 @@ export async function analyzeMatch(homeId: string, awayId: string): Promise<Anal
   let h2hDraws = 0;
 
   for (const m of h2hMatches) {
-    if (m.homeScore === m.awayScore) {
+    const hScore = m.homeScore ?? 0;
+    const aScore = m.awayScore ?? 0;
+    if (hScore === aScore) {
       h2hDraws++;
     } else if (
-      (m.homePlayerId === homeId && m.homeScore > m.awayScore) ||
-      (m.awayPlayerId === homeId && m.awayScore > m.homeScore)
+      (m.homePlayerId === homeId && hScore > aScore) ||
+      (m.awayPlayerId === homeId && aScore > hScore)
     ) {
       h2hHomeWins++;
     } else {

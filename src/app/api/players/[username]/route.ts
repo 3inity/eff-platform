@@ -34,6 +34,7 @@ export async function GET(
     // Fetch recent 20 matches for the player
     const matches = await prisma.match.findMany({
       where: {
+        isCompleted: true,
         OR: [{ homePlayerId: player.id }, { awayPlayerId: player.id }],
       },
       include: {
@@ -58,8 +59,8 @@ export async function GET(
     // Map match outcomes from player's perspective
     const recentMatchesWithOutcome = matches.map((m) => {
       const isHome = m.homePlayerId === player.id;
-      const myScore = isHome ? m.homeScore : m.awayScore;
-      const oppScore = isHome ? m.awayScore : m.homeScore;
+      const myScore = (isHome ? m.homeScore : m.awayScore) ?? 0;
+      const oppScore = (isHome ? m.awayScore : m.homeScore) ?? 0;
       const opponent = isHome ? m.awayPlayer : m.homePlayer;
 
       let result: "W" | "D" | "L" = "D";

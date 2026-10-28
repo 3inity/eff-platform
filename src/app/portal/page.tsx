@@ -19,6 +19,8 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { PlayerPortalFixtures } from "@/components/PlayerPortalFixtures";
+
 export const revalidate = 0; // dynamic on player login
 
 export default async function PortalDashboardPage() {
@@ -61,6 +63,7 @@ export default async function PortalDashboardPage() {
   // Fetch recent completed matches for form dots
   const recentMatches = await prisma.match.findMany({
     where: {
+      isCompleted: true,
       OR: [{ homePlayerId: player.id }, { awayPlayerId: player.id }],
     },
     orderBy: { playedAt: "desc" },
@@ -69,8 +72,8 @@ export default async function PortalDashboardPage() {
 
   const last5 = recentMatches.map((m) => {
     const isHome = m.homePlayerId === player.id;
-    const myScore = isHome ? m.homeScore : m.awayScore;
-    const oppScore = isHome ? m.awayScore : m.homeScore;
+    const myScore = (isHome ? m.homeScore : m.awayScore) ?? 0;
+    const oppScore = (isHome ? m.awayScore : m.homeScore) ?? 0;
     if (myScore > oppScore) return "W";
     if (myScore === oppScore) return "D";
     return "L";
@@ -258,6 +261,24 @@ export default async function PortalDashboardPage() {
           </div>
         )}
       </div>
+
+      {/* MY FIXTURES & MATCH SCHEDULE SECTION */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between border-b border-blue-800/40 pb-3">
+          <h2 className="text-lg font-black tracking-wide uppercase text-white flex items-center gap-2">
+            <Swords className="w-5 h-5 text-[#e5b53e]" />
+            My Fixtures & Tournament Matches
+          </h2>
+          <Link
+            href="/portal/competitions"
+            className="text-xs font-bold text-[#00b4ff] hover:underline"
+          >
+            All Competitions →
+          </Link>
+        </div>
+
+        <PlayerPortalFixtures playerId={player.id} />
+      </section>
 
       {/* 2-COLUMN SECTION: ACTIVE TOURNAMENTS & RECENT BETS */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

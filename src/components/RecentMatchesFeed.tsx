@@ -8,28 +8,28 @@ import { MatchAnalysisModal } from "@/components/MatchAnalysisModal";
 
 export interface MatchItem {
   id: string;
-  homeScore: number;
-  awayScore: number;
-  playedAt: string | Date;
+  homeScore?: number | null;
+  awayScore?: number | null;
+  playedAt?: string | Date | null;
   competition?: {
     id: string;
     name: string;
     badgeKey?: string | null;
   } | null;
-  homePlayer: {
+  homePlayer?: {
     id: string;
     username: string;
     teamName: string;
     clubLogoUrl?: string | null;
     avatarUrl?: string | null;
-  };
-  awayPlayer: {
+  } | null;
+  awayPlayer?: {
     id: string;
     username: string;
     teamName: string;
     clubLogoUrl?: string | null;
     avatarUrl?: string | null;
-  };
+  } | null;
 }
 
 export function RecentMatchesFeed({ matches }: { matches: MatchItem[] }) {
@@ -56,8 +56,12 @@ export function RecentMatchesFeed({ matches }: { matches: MatchItem[] }) {
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {matches.map((m) => {
-          const homeCrest = m.homePlayer.clubLogoUrl || m.homePlayer.avatarUrl || "/branding/default-crest.svg";
-          const awayCrest = m.awayPlayer.clubLogoUrl || m.awayPlayer.avatarUrl || "/branding/default-crest.svg";
+          const homeName = m.homePlayer?.username || "TBD";
+          const awayName = m.awayPlayer?.username || "TBD";
+          const homeTeam = m.homePlayer?.teamName || "Club TBD";
+          const awayTeam = m.awayPlayer?.teamName || "Club TBD";
+          const homeCrest = m.homePlayer?.clubLogoUrl || m.homePlayer?.avatarUrl || "/branding/default-crest.svg";
+          const awayCrest = m.awayPlayer?.clubLogoUrl || m.awayPlayer?.avatarUrl || "/branding/default-crest.svg";
 
           return (
             <div
@@ -80,7 +84,7 @@ export function RecentMatchesFeed({ matches }: { matches: MatchItem[] }) {
                   )}
                 </div>
                 <span className="px-2 py-0.5 rounded text-[10px] font-black tracking-wider uppercase bg-slate-100 text-slate-700 border border-slate-200">
-                  FT
+                  {m.homeScore !== null && m.homeScore !== undefined ? "FT" : "SCHEDULED"}
                 </span>
               </div>
 
@@ -91,7 +95,7 @@ export function RecentMatchesFeed({ matches }: { matches: MatchItem[] }) {
                   <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
                     <Image
                       src={homeCrest}
-                      alt={m.homePlayer.teamName}
+                      alt={homeTeam}
                       width={28}
                       height={28}
                       className="w-6 h-6 object-contain"
@@ -99,13 +103,13 @@ export function RecentMatchesFeed({ matches }: { matches: MatchItem[] }) {
                   </div>
                   <div className="min-w-0">
                     <Link
-                      href={`/player/${m.homePlayer.username}`}
+                      href={`/player/${homeName}`}
                       className="text-xs font-black text-slate-900 hover:text-[#00b4ff] transition truncate block"
                     >
-                      {m.homePlayer.teamName}
+                      {homeTeam}
                     </Link>
                     <p className="text-[10px] text-slate-400 font-mono truncate">
-                      @{m.homePlayer.username}
+                      @{homeName}
                     </p>
                   </div>
                 </div>
@@ -114,7 +118,7 @@ export function RecentMatchesFeed({ matches }: { matches: MatchItem[] }) {
                 <div className="col-span-1 text-center">
                   <div className="bg-[#0a1128] border border-blue-900 rounded-lg py-1 px-1.5 shadow-inner">
                     <span className="font-mono text-base font-black text-white tracking-widest">
-                      {m.homeScore}-{m.awayScore}
+                      {m.homeScore !== null && m.homeScore !== undefined ? `${m.homeScore}-${m.awayScore}` : "VS"}
                     </span>
                   </div>
                 </div>
@@ -123,19 +127,19 @@ export function RecentMatchesFeed({ matches }: { matches: MatchItem[] }) {
                 <div className="col-span-3 flex items-center justify-end gap-2.5 text-right">
                   <div className="min-w-0">
                     <Link
-                      href={`/player/${m.awayPlayer.username}`}
+                      href={`/player/${awayName}`}
                       className="text-xs font-black text-slate-900 hover:text-[#00b4ff] transition truncate block"
                     >
-                      {m.awayPlayer.teamName}
+                      {awayTeam}
                     </Link>
                     <p className="text-[10px] text-slate-400 font-mono truncate">
-                      @{m.awayPlayer.username}
+                      @{awayName}
                     </p>
                   </div>
                   <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
                     <Image
                       src={awayCrest}
-                      alt={m.awayPlayer.teamName}
+                      alt={awayTeam}
                       width={28}
                       height={28}
                       className="w-6 h-6 object-contain"
@@ -147,23 +151,25 @@ export function RecentMatchesFeed({ matches }: { matches: MatchItem[] }) {
               {/* Action footer */}
               <div className="flex items-center justify-between pt-3 mt-2 border-t border-slate-100 text-[11px]">
                 <span className="text-slate-400 font-mono">
-                  {new Date(m.playedAt).toLocaleDateString()}
+                  {m.playedAt ? new Date(m.playedAt).toLocaleDateString() : "Recent"}
                 </span>
 
-                <button
-                  onClick={() =>
-                    setSelectedMatch({
-                      homeId: m.homePlayer.id,
-                      awayId: m.awayPlayer.id,
-                      homeName: m.homePlayer.teamName,
-                      awayName: m.awayPlayer.teamName,
-                    })
-                  }
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-800 hover:text-white bg-blue-50 hover:bg-[#00b4ff] border border-blue-200 px-2.5 py-1 rounded-md transition"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-[#e5b53e]" />
-                  AI Analysis
-                </button>
+                {m.homePlayer && m.awayPlayer && (
+                  <button
+                    onClick={() =>
+                      setSelectedMatch({
+                        homeId: m.homePlayer!.id,
+                        awayId: m.awayPlayer!.id,
+                        homeName: m.homePlayer!.teamName,
+                        awayName: m.awayPlayer!.teamName,
+                      })
+                    }
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-800 hover:text-white bg-blue-50 hover:bg-[#00b4ff] border border-blue-200 px-2.5 py-1 rounded-md transition"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-[#e5b53e]" />
+                    AI Analysis
+                  </button>
+                )}
               </div>
             </div>
           );

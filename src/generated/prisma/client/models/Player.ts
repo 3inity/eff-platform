@@ -631,6 +631,11 @@ export type PlayerScalarRelationFilter = {
   isNot?: Prisma.PlayerWhereInput
 }
 
+export type PlayerNullableScalarRelationFilter = {
+  is?: Prisma.PlayerWhereInput | null
+  isNot?: Prisma.PlayerWhereInput | null
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -705,18 +710,22 @@ export type PlayerCreateNestedOneWithoutAwayMatchesInput = {
   connect?: Prisma.PlayerWhereUniqueInput
 }
 
-export type PlayerUpdateOneRequiredWithoutHomeMatchesNestedInput = {
+export type PlayerUpdateOneWithoutHomeMatchesNestedInput = {
   create?: Prisma.XOR<Prisma.PlayerCreateWithoutHomeMatchesInput, Prisma.PlayerUncheckedCreateWithoutHomeMatchesInput>
   connectOrCreate?: Prisma.PlayerCreateOrConnectWithoutHomeMatchesInput
   upsert?: Prisma.PlayerUpsertWithoutHomeMatchesInput
+  disconnect?: Prisma.PlayerWhereInput | boolean
+  delete?: Prisma.PlayerWhereInput | boolean
   connect?: Prisma.PlayerWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.PlayerUpdateToOneWithWhereWithoutHomeMatchesInput, Prisma.PlayerUpdateWithoutHomeMatchesInput>, Prisma.PlayerUncheckedUpdateWithoutHomeMatchesInput>
 }
 
-export type PlayerUpdateOneRequiredWithoutAwayMatchesNestedInput = {
+export type PlayerUpdateOneWithoutAwayMatchesNestedInput = {
   create?: Prisma.XOR<Prisma.PlayerCreateWithoutAwayMatchesInput, Prisma.PlayerUncheckedCreateWithoutAwayMatchesInput>
   connectOrCreate?: Prisma.PlayerCreateOrConnectWithoutAwayMatchesInput
   upsert?: Prisma.PlayerUpsertWithoutAwayMatchesInput
+  disconnect?: Prisma.PlayerWhereInput | boolean
+  delete?: Prisma.PlayerWhereInput | boolean
   connect?: Prisma.PlayerWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.PlayerUpdateToOneWithWhereWithoutAwayMatchesInput, Prisma.PlayerUpdateWithoutAwayMatchesInput>, Prisma.PlayerUncheckedUpdateWithoutAwayMatchesInput>
 }

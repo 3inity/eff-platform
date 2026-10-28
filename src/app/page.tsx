@@ -72,6 +72,7 @@ export default async function HomePage() {
   for (const p of topPlayers) {
     const matches = await prisma.match.findMany({
       where: {
+        isCompleted: true,
         OR: [{ homePlayerId: p.id }, { awayPlayerId: p.id }],
       },
       orderBy: { playedAt: "desc" },
@@ -79,8 +80,8 @@ export default async function HomePage() {
     });
     playerForms[p.id] = matches.map((m) => {
       const isHome = m.homePlayerId === p.id;
-      const myScore = isHome ? m.homeScore : m.awayScore;
-      const oppScore = isHome ? m.awayScore : m.homeScore;
+      const myScore = (isHome ? m.homeScore : m.awayScore) ?? 0;
+      const oppScore = (isHome ? m.awayScore : m.homeScore) ?? 0;
       if (myScore > oppScore) return "W";
       if (myScore === oppScore) return "D";
       return "L";

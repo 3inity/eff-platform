@@ -42,6 +42,7 @@ export default async function PlayerProfilePage({ params }: PlayerProfilePagePro
   // Fetch recent 10 matches for this player
   const matches = await prisma.match.findMany({
     where: {
+      isCompleted: true,
       OR: [{ homePlayerId: player.id }, { awayPlayerId: player.id }],
     },
     orderBy: { playedAt: "desc" },
@@ -62,8 +63,8 @@ export default async function PlayerProfilePage({ params }: PlayerProfilePagePro
   // Last 5 form
   const last5 = matches.slice(0, 5).map((m) => {
     const isHome = m.homePlayerId === player.id;
-    const myScore = isHome ? m.homeScore : m.awayScore;
-    const oppScore = isHome ? m.awayScore : m.homeScore;
+    const myScore = (isHome ? m.homeScore : m.awayScore) ?? 0;
+    const oppScore = (isHome ? m.awayScore : m.homeScore) ?? 0;
     if (myScore > oppScore) return "W";
     if (myScore === oppScore) return "D";
     return "L";
@@ -267,8 +268,8 @@ export default async function PlayerProfilePage({ params }: PlayerProfilePagePro
                       matches.map((m) => {
                         const isHome = m.homePlayerId === player.id;
                         const opp = isHome ? m.awayPlayer : m.homePlayer;
-                        const myScore = isHome ? m.homeScore : m.awayScore;
-                        const oppScore = isHome ? m.awayScore : m.homeScore;
+                        const myScore = (isHome ? m.homeScore : m.awayScore) ?? 0;
+                        const oppScore = (isHome ? m.awayScore : m.homeScore) ?? 0;
 
                         let resultLabel = "DRAW";
                         let resultClass = "bg-slate-100 text-slate-600 border-slate-300";
@@ -280,12 +281,15 @@ export default async function PlayerProfilePage({ params }: PlayerProfilePagePro
                           resultClass = "bg-[#e90052]/15 text-[#e90052] border-[#e90052]/40 font-bold";
                         }
 
-                        const oppCrest = opp.avatarUrl || "/branding/default-crest.svg";
+                        const oppName = opp?.username || "TBD";
+                        const oppTeam = opp?.teamName || "Opponent";
+                        const oppCrest = opp?.avatarUrl || "/branding/default-crest.svg";
+                        const matchDate = m.playedAt ? new Date(m.playedAt).toLocaleDateString() : (m.scheduledAt ? new Date(m.scheduledAt).toLocaleDateString() : "TBD");
 
                         return (
                           <tr key={m.id} className="hover:bg-blue-50/60 transition">
                             <td className="py-3 px-3 font-mono text-slate-500 text-[11px]">
-                              {new Date(m.playedAt).toLocaleDateString()}
+                              {matchDate}
                             </td>
                             <td className="py-3 px-3">
                               {m.competition ? (
@@ -301,20 +305,20 @@ export default async function PlayerProfilePage({ params }: PlayerProfilePagePro
                             </td>
                             <td className="py-3 px-3">
                               <Link
-                                href={`/player/${opp.username}`}
+                                href={`/player/${oppName}`}
                                 className="flex items-center gap-2 group"
                               >
                                 <div className="w-6 h-6 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden flex-shrink-0">
                                   <Image
                                     src={oppCrest}
-                                    alt={opp.teamName}
+                                    alt={oppTeam}
                                     width={20}
                                     height={20}
                                     className="w-5 h-5 object-contain"
                                   />
                                 </div>
                                 <span className="font-bold text-[#0f172a] group-hover:text-[#00b4ff] transition">
-                                  {opp.teamName}
+                                  {oppTeam}
                                 </span>
                                 <span className="text-[10px] text-slate-400 font-mono">
                                   ({isHome ? "H" : "A"})

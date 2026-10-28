@@ -27,12 +27,24 @@ export type AggregateCompetition = {
 }
 
 export type CompetitionAvgAggregateOutputType = {
+  currentMatchday: number | null
   matchdayDurationHours: number | null
+  roundRobinLegs: number | null
+  knockoutLegs: number | null
+  groupCount: number | null
+  teamsPerGroup: number | null
+  qualifiersPerGroup: number | null
   maxParticipants: number | null
 }
 
 export type CompetitionSumAggregateOutputType = {
+  currentMatchday: number | null
   matchdayDurationHours: number | null
+  roundRobinLegs: number | null
+  knockoutLegs: number | null
+  groupCount: number | null
+  teamsPerGroup: number | null
+  qualifiersPerGroup: number | null
   maxParticipants: number | null
 }
 
@@ -40,8 +52,15 @@ export type CompetitionMinAggregateOutputType = {
   id: string | null
   name: string | null
   description: string | null
+  startDate: Date | null
+  currentMatchday: number | null
   matchdayDurationHours: number | null
   matchdayEndsAt: Date | null
+  roundRobinLegs: number | null
+  knockoutLegs: number | null
+  groupCount: number | null
+  teamsPerGroup: number | null
+  qualifiersPerGroup: number | null
   type: $Enums.CompetitionType | null
   format: $Enums.CompetitionFormat | null
   status: $Enums.CompetitionStatus | null
@@ -59,8 +78,15 @@ export type CompetitionMaxAggregateOutputType = {
   id: string | null
   name: string | null
   description: string | null
+  startDate: Date | null
+  currentMatchday: number | null
   matchdayDurationHours: number | null
   matchdayEndsAt: Date | null
+  roundRobinLegs: number | null
+  knockoutLegs: number | null
+  groupCount: number | null
+  teamsPerGroup: number | null
+  qualifiersPerGroup: number | null
   type: $Enums.CompetitionType | null
   format: $Enums.CompetitionFormat | null
   status: $Enums.CompetitionStatus | null
@@ -79,8 +105,15 @@ export type CompetitionCountAggregateOutputType = {
   name: number
   description: number
   additionalInfo: number
+  startDate: number
+  currentMatchday: number
   matchdayDurationHours: number
   matchdayEndsAt: number
+  roundRobinLegs: number
+  knockoutLegs: number
+  groupCount: number
+  teamsPerGroup: number
+  qualifiersPerGroup: number
   type: number
   format: number
   status: number
@@ -97,12 +130,24 @@ export type CompetitionCountAggregateOutputType = {
 
 
 export type CompetitionAvgAggregateInputType = {
+  currentMatchday?: true
   matchdayDurationHours?: true
+  roundRobinLegs?: true
+  knockoutLegs?: true
+  groupCount?: true
+  teamsPerGroup?: true
+  qualifiersPerGroup?: true
   maxParticipants?: true
 }
 
 export type CompetitionSumAggregateInputType = {
+  currentMatchday?: true
   matchdayDurationHours?: true
+  roundRobinLegs?: true
+  knockoutLegs?: true
+  groupCount?: true
+  teamsPerGroup?: true
+  qualifiersPerGroup?: true
   maxParticipants?: true
 }
 
@@ -110,8 +155,15 @@ export type CompetitionMinAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  startDate?: true
+  currentMatchday?: true
   matchdayDurationHours?: true
   matchdayEndsAt?: true
+  roundRobinLegs?: true
+  knockoutLegs?: true
+  groupCount?: true
+  teamsPerGroup?: true
+  qualifiersPerGroup?: true
   type?: true
   format?: true
   status?: true
@@ -129,8 +181,15 @@ export type CompetitionMaxAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  startDate?: true
+  currentMatchday?: true
   matchdayDurationHours?: true
   matchdayEndsAt?: true
+  roundRobinLegs?: true
+  knockoutLegs?: true
+  groupCount?: true
+  teamsPerGroup?: true
+  qualifiersPerGroup?: true
   type?: true
   format?: true
   status?: true
@@ -149,8 +208,15 @@ export type CompetitionCountAggregateInputType = {
   name?: true
   description?: true
   additionalInfo?: true
+  startDate?: true
+  currentMatchday?: true
   matchdayDurationHours?: true
   matchdayEndsAt?: true
+  roundRobinLegs?: true
+  knockoutLegs?: true
+  groupCount?: true
+  teamsPerGroup?: true
+  qualifiersPerGroup?: true
   type?: true
   format?: true
   status?: true
@@ -256,8 +322,15 @@ export type CompetitionGroupByOutputType = {
   name: string
   description: string | null
   additionalInfo: runtime.JsonValue | null
+  startDate: Date | null
+  currentMatchday: number | null
   matchdayDurationHours: number
   matchdayEndsAt: Date | null
+  roundRobinLegs: number
+  knockoutLegs: number
+  groupCount: number | null
+  teamsPerGroup: number | null
+  qualifiersPerGroup: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status: $Enums.CompetitionStatus
@@ -299,8 +372,15 @@ export type CompetitionWhereInput = {
   name?: Prisma.StringFilter<"Competition"> | string
   description?: Prisma.StringNullableFilter<"Competition"> | string | null
   additionalInfo?: Prisma.JsonNullableFilter<"Competition">
+  startDate?: Prisma.DateTimeNullableFilter<"Competition"> | Date | string | null
+  currentMatchday?: Prisma.IntNullableFilter<"Competition"> | number | null
   matchdayDurationHours?: Prisma.IntFilter<"Competition"> | number
   matchdayEndsAt?: Prisma.DateTimeNullableFilter<"Competition"> | Date | string | null
+  roundRobinLegs?: Prisma.IntFilter<"Competition"> | number
+  knockoutLegs?: Prisma.IntFilter<"Competition"> | number
+  groupCount?: Prisma.IntNullableFilter<"Competition"> | number | null
+  teamsPerGroup?: Prisma.IntNullableFilter<"Competition"> | number | null
+  qualifiersPerGroup?: Prisma.IntNullableFilter<"Competition"> | number | null
   type?: Prisma.EnumCompetitionTypeFilter<"Competition"> | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFilter<"Competition"> | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFilter<"Competition"> | $Enums.CompetitionStatus
@@ -322,8 +402,15 @@ export type CompetitionOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   additionalInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentMatchday?: Prisma.SortOrderInput | Prisma.SortOrder
   matchdayDurationHours?: Prisma.SortOrder
   matchdayEndsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  roundRobinLegs?: Prisma.SortOrder
+  knockoutLegs?: Prisma.SortOrder
+  groupCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamsPerGroup?: Prisma.SortOrderInput | Prisma.SortOrder
+  qualifiersPerGroup?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   format?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -348,8 +435,15 @@ export type CompetitionWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Competition"> | string
   description?: Prisma.StringNullableFilter<"Competition"> | string | null
   additionalInfo?: Prisma.JsonNullableFilter<"Competition">
+  startDate?: Prisma.DateTimeNullableFilter<"Competition"> | Date | string | null
+  currentMatchday?: Prisma.IntNullableFilter<"Competition"> | number | null
   matchdayDurationHours?: Prisma.IntFilter<"Competition"> | number
   matchdayEndsAt?: Prisma.DateTimeNullableFilter<"Competition"> | Date | string | null
+  roundRobinLegs?: Prisma.IntFilter<"Competition"> | number
+  knockoutLegs?: Prisma.IntFilter<"Competition"> | number
+  groupCount?: Prisma.IntNullableFilter<"Competition"> | number | null
+  teamsPerGroup?: Prisma.IntNullableFilter<"Competition"> | number | null
+  qualifiersPerGroup?: Prisma.IntNullableFilter<"Competition"> | number | null
   type?: Prisma.EnumCompetitionTypeFilter<"Competition"> | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFilter<"Competition"> | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFilter<"Competition"> | $Enums.CompetitionStatus
@@ -371,8 +465,15 @@ export type CompetitionOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   additionalInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentMatchday?: Prisma.SortOrderInput | Prisma.SortOrder
   matchdayDurationHours?: Prisma.SortOrder
   matchdayEndsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  roundRobinLegs?: Prisma.SortOrder
+  knockoutLegs?: Prisma.SortOrder
+  groupCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamsPerGroup?: Prisma.SortOrderInput | Prisma.SortOrder
+  qualifiersPerGroup?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   format?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -399,8 +500,15 @@ export type CompetitionScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Competition"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Competition"> | string | null
   additionalInfo?: Prisma.JsonNullableWithAggregatesFilter<"Competition">
+  startDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Competition"> | Date | string | null
+  currentMatchday?: Prisma.IntNullableWithAggregatesFilter<"Competition"> | number | null
   matchdayDurationHours?: Prisma.IntWithAggregatesFilter<"Competition"> | number
   matchdayEndsAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Competition"> | Date | string | null
+  roundRobinLegs?: Prisma.IntWithAggregatesFilter<"Competition"> | number
+  knockoutLegs?: Prisma.IntWithAggregatesFilter<"Competition"> | number
+  groupCount?: Prisma.IntNullableWithAggregatesFilter<"Competition"> | number | null
+  teamsPerGroup?: Prisma.IntNullableWithAggregatesFilter<"Competition"> | number | null
+  qualifiersPerGroup?: Prisma.IntNullableWithAggregatesFilter<"Competition"> | number | null
   type?: Prisma.EnumCompetitionTypeWithAggregatesFilter<"Competition"> | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatWithAggregatesFilter<"Competition"> | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusWithAggregatesFilter<"Competition"> | $Enums.CompetitionStatus
@@ -419,8 +527,15 @@ export type CompetitionCreateInput = {
   name: string
   description?: string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Date | string | null
+  currentMatchday?: number | null
   matchdayDurationHours?: number
   matchdayEndsAt?: Date | string | null
+  roundRobinLegs?: number
+  knockoutLegs?: number
+  groupCount?: number | null
+  teamsPerGroup?: number | null
+  qualifiersPerGroup?: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status?: $Enums.CompetitionStatus
@@ -442,8 +557,15 @@ export type CompetitionUncheckedCreateInput = {
   name: string
   description?: string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Date | string | null
+  currentMatchday?: number | null
   matchdayDurationHours?: number
   matchdayEndsAt?: Date | string | null
+  roundRobinLegs?: number
+  knockoutLegs?: number
+  groupCount?: number | null
+  teamsPerGroup?: number | null
+  qualifiersPerGroup?: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status?: $Enums.CompetitionStatus
@@ -465,8 +587,15 @@ export type CompetitionUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -488,8 +617,15 @@ export type CompetitionUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -511,8 +647,15 @@ export type CompetitionCreateManyInput = {
   name: string
   description?: string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Date | string | null
+  currentMatchday?: number | null
   matchdayDurationHours?: number
   matchdayEndsAt?: Date | string | null
+  roundRobinLegs?: number
+  knockoutLegs?: number
+  groupCount?: number | null
+  teamsPerGroup?: number | null
+  qualifiersPerGroup?: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status?: $Enums.CompetitionStatus
@@ -531,8 +674,15 @@ export type CompetitionUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -551,8 +701,15 @@ export type CompetitionUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -571,8 +728,15 @@ export type CompetitionCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   additionalInfo?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  currentMatchday?: Prisma.SortOrder
   matchdayDurationHours?: Prisma.SortOrder
   matchdayEndsAt?: Prisma.SortOrder
+  roundRobinLegs?: Prisma.SortOrder
+  knockoutLegs?: Prisma.SortOrder
+  groupCount?: Prisma.SortOrder
+  teamsPerGroup?: Prisma.SortOrder
+  qualifiersPerGroup?: Prisma.SortOrder
   type?: Prisma.SortOrder
   format?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -587,7 +751,13 @@ export type CompetitionCountOrderByAggregateInput = {
 }
 
 export type CompetitionAvgOrderByAggregateInput = {
+  currentMatchday?: Prisma.SortOrder
   matchdayDurationHours?: Prisma.SortOrder
+  roundRobinLegs?: Prisma.SortOrder
+  knockoutLegs?: Prisma.SortOrder
+  groupCount?: Prisma.SortOrder
+  teamsPerGroup?: Prisma.SortOrder
+  qualifiersPerGroup?: Prisma.SortOrder
   maxParticipants?: Prisma.SortOrder
 }
 
@@ -595,8 +765,15 @@ export type CompetitionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  currentMatchday?: Prisma.SortOrder
   matchdayDurationHours?: Prisma.SortOrder
   matchdayEndsAt?: Prisma.SortOrder
+  roundRobinLegs?: Prisma.SortOrder
+  knockoutLegs?: Prisma.SortOrder
+  groupCount?: Prisma.SortOrder
+  teamsPerGroup?: Prisma.SortOrder
+  qualifiersPerGroup?: Prisma.SortOrder
   type?: Prisma.SortOrder
   format?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -614,8 +791,15 @@ export type CompetitionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  currentMatchday?: Prisma.SortOrder
   matchdayDurationHours?: Prisma.SortOrder
   matchdayEndsAt?: Prisma.SortOrder
+  roundRobinLegs?: Prisma.SortOrder
+  knockoutLegs?: Prisma.SortOrder
+  groupCount?: Prisma.SortOrder
+  teamsPerGroup?: Prisma.SortOrder
+  qualifiersPerGroup?: Prisma.SortOrder
   type?: Prisma.SortOrder
   format?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -630,13 +814,27 @@ export type CompetitionMinOrderByAggregateInput = {
 }
 
 export type CompetitionSumOrderByAggregateInput = {
+  currentMatchday?: Prisma.SortOrder
   matchdayDurationHours?: Prisma.SortOrder
+  roundRobinLegs?: Prisma.SortOrder
+  knockoutLegs?: Prisma.SortOrder
+  groupCount?: Prisma.SortOrder
+  teamsPerGroup?: Prisma.SortOrder
+  qualifiersPerGroup?: Prisma.SortOrder
   maxParticipants?: Prisma.SortOrder
 }
 
 export type CompetitionScalarRelationFilter = {
   is?: Prisma.CompetitionWhereInput
   isNot?: Prisma.CompetitionWhereInput
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type EnumCompetitionTypeFieldUpdateOperationsInput = {
@@ -649,14 +847,6 @@ export type EnumCompetitionFormatFieldUpdateOperationsInput = {
 
 export type EnumCompetitionStatusFieldUpdateOperationsInput = {
   set?: $Enums.CompetitionStatus
-}
-
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type CompetitionCreateNestedOneWithoutTeamsInput = {
@@ -706,8 +896,15 @@ export type CompetitionCreateWithoutTeamsInput = {
   name: string
   description?: string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Date | string | null
+  currentMatchday?: number | null
   matchdayDurationHours?: number
   matchdayEndsAt?: Date | string | null
+  roundRobinLegs?: number
+  knockoutLegs?: number
+  groupCount?: number | null
+  teamsPerGroup?: number | null
+  qualifiersPerGroup?: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status?: $Enums.CompetitionStatus
@@ -728,8 +925,15 @@ export type CompetitionUncheckedCreateWithoutTeamsInput = {
   name: string
   description?: string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Date | string | null
+  currentMatchday?: number | null
   matchdayDurationHours?: number
   matchdayEndsAt?: Date | string | null
+  roundRobinLegs?: number
+  knockoutLegs?: number
+  groupCount?: number | null
+  teamsPerGroup?: number | null
+  qualifiersPerGroup?: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status?: $Enums.CompetitionStatus
@@ -766,8 +970,15 @@ export type CompetitionUpdateWithoutTeamsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -788,8 +999,15 @@ export type CompetitionUncheckedUpdateWithoutTeamsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -810,8 +1028,15 @@ export type CompetitionCreateWithoutParticipantsInput = {
   name: string
   description?: string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Date | string | null
+  currentMatchday?: number | null
   matchdayDurationHours?: number
   matchdayEndsAt?: Date | string | null
+  roundRobinLegs?: number
+  knockoutLegs?: number
+  groupCount?: number | null
+  teamsPerGroup?: number | null
+  qualifiersPerGroup?: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status?: $Enums.CompetitionStatus
@@ -832,8 +1057,15 @@ export type CompetitionUncheckedCreateWithoutParticipantsInput = {
   name: string
   description?: string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Date | string | null
+  currentMatchday?: number | null
   matchdayDurationHours?: number
   matchdayEndsAt?: Date | string | null
+  roundRobinLegs?: number
+  knockoutLegs?: number
+  groupCount?: number | null
+  teamsPerGroup?: number | null
+  qualifiersPerGroup?: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status?: $Enums.CompetitionStatus
@@ -870,8 +1102,15 @@ export type CompetitionUpdateWithoutParticipantsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -892,8 +1131,15 @@ export type CompetitionUncheckedUpdateWithoutParticipantsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -914,8 +1160,15 @@ export type CompetitionCreateWithoutMatchesInput = {
   name: string
   description?: string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Date | string | null
+  currentMatchday?: number | null
   matchdayDurationHours?: number
   matchdayEndsAt?: Date | string | null
+  roundRobinLegs?: number
+  knockoutLegs?: number
+  groupCount?: number | null
+  teamsPerGroup?: number | null
+  qualifiersPerGroup?: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status?: $Enums.CompetitionStatus
@@ -936,8 +1189,15 @@ export type CompetitionUncheckedCreateWithoutMatchesInput = {
   name: string
   description?: string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Date | string | null
+  currentMatchday?: number | null
   matchdayDurationHours?: number
   matchdayEndsAt?: Date | string | null
+  roundRobinLegs?: number
+  knockoutLegs?: number
+  groupCount?: number | null
+  teamsPerGroup?: number | null
+  qualifiersPerGroup?: number | null
   type: $Enums.CompetitionType
   format: $Enums.CompetitionFormat
   status?: $Enums.CompetitionStatus
@@ -974,8 +1234,15 @@ export type CompetitionUpdateWithoutMatchesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -996,8 +1263,15 @@ export type CompetitionUncheckedUpdateWithoutMatchesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   additionalInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentMatchday?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   matchdayDurationHours?: Prisma.IntFieldUpdateOperationsInput | number
   matchdayEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roundRobinLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  knockoutLegs?: Prisma.IntFieldUpdateOperationsInput | number
+  groupCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  teamsPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  qualifiersPerGroup?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   type?: Prisma.EnumCompetitionTypeFieldUpdateOperationsInput | $Enums.CompetitionType
   format?: Prisma.EnumCompetitionFormatFieldUpdateOperationsInput | $Enums.CompetitionFormat
   status?: Prisma.EnumCompetitionStatusFieldUpdateOperationsInput | $Enums.CompetitionStatus
@@ -1067,8 +1341,15 @@ export type CompetitionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   name?: boolean
   description?: boolean
   additionalInfo?: boolean
+  startDate?: boolean
+  currentMatchday?: boolean
   matchdayDurationHours?: boolean
   matchdayEndsAt?: boolean
+  roundRobinLegs?: boolean
+  knockoutLegs?: boolean
+  groupCount?: boolean
+  teamsPerGroup?: boolean
+  qualifiersPerGroup?: boolean
   type?: boolean
   format?: boolean
   status?: boolean
@@ -1091,8 +1372,15 @@ export type CompetitionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   name?: boolean
   description?: boolean
   additionalInfo?: boolean
+  startDate?: boolean
+  currentMatchday?: boolean
   matchdayDurationHours?: boolean
   matchdayEndsAt?: boolean
+  roundRobinLegs?: boolean
+  knockoutLegs?: boolean
+  groupCount?: boolean
+  teamsPerGroup?: boolean
+  qualifiersPerGroup?: boolean
   type?: boolean
   format?: boolean
   status?: boolean
@@ -1111,8 +1399,15 @@ export type CompetitionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   name?: boolean
   description?: boolean
   additionalInfo?: boolean
+  startDate?: boolean
+  currentMatchday?: boolean
   matchdayDurationHours?: boolean
   matchdayEndsAt?: boolean
+  roundRobinLegs?: boolean
+  knockoutLegs?: boolean
+  groupCount?: boolean
+  teamsPerGroup?: boolean
+  qualifiersPerGroup?: boolean
   type?: boolean
   format?: boolean
   status?: boolean
@@ -1131,8 +1426,15 @@ export type CompetitionSelectScalar = {
   name?: boolean
   description?: boolean
   additionalInfo?: boolean
+  startDate?: boolean
+  currentMatchday?: boolean
   matchdayDurationHours?: boolean
   matchdayEndsAt?: boolean
+  roundRobinLegs?: boolean
+  knockoutLegs?: boolean
+  groupCount?: boolean
+  teamsPerGroup?: boolean
+  qualifiersPerGroup?: boolean
   type?: boolean
   format?: boolean
   status?: boolean
@@ -1146,7 +1448,7 @@ export type CompetitionSelectScalar = {
   createdAt?: boolean
 }
 
-export type CompetitionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "additionalInfo" | "matchdayDurationHours" | "matchdayEndsAt" | "type" | "format" | "status" | "season" | "badgeKey" | "isActive" | "registrationOpenAt" | "registrationCloseAt" | "maxParticipants" | "requiresApproval" | "createdAt", ExtArgs["result"]["competition"]>
+export type CompetitionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "additionalInfo" | "startDate" | "currentMatchday" | "matchdayDurationHours" | "matchdayEndsAt" | "roundRobinLegs" | "knockoutLegs" | "groupCount" | "teamsPerGroup" | "qualifiersPerGroup" | "type" | "format" | "status" | "season" | "badgeKey" | "isActive" | "registrationOpenAt" | "registrationCloseAt" | "maxParticipants" | "requiresApproval" | "createdAt", ExtArgs["result"]["competition"]>
 export type CompetitionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   teams?: boolean | Prisma.Competition$teamsArgs<ExtArgs>
   participants?: boolean | Prisma.Competition$participantsArgs<ExtArgs>
@@ -1168,8 +1470,15 @@ export type $CompetitionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     name: string
     description: string | null
     additionalInfo: runtime.JsonValue | null
+    startDate: Date | null
+    currentMatchday: number | null
     matchdayDurationHours: number
     matchdayEndsAt: Date | null
+    roundRobinLegs: number
+    knockoutLegs: number
+    groupCount: number | null
+    teamsPerGroup: number | null
+    qualifiersPerGroup: number | null
     type: $Enums.CompetitionType
     format: $Enums.CompetitionFormat
     status: $Enums.CompetitionStatus
@@ -1611,8 +1920,15 @@ export interface CompetitionFieldRefs {
   readonly name: Prisma.FieldRef<"Competition", 'String'>
   readonly description: Prisma.FieldRef<"Competition", 'String'>
   readonly additionalInfo: Prisma.FieldRef<"Competition", 'Json'>
+  readonly startDate: Prisma.FieldRef<"Competition", 'DateTime'>
+  readonly currentMatchday: Prisma.FieldRef<"Competition", 'Int'>
   readonly matchdayDurationHours: Prisma.FieldRef<"Competition", 'Int'>
   readonly matchdayEndsAt: Prisma.FieldRef<"Competition", 'DateTime'>
+  readonly roundRobinLegs: Prisma.FieldRef<"Competition", 'Int'>
+  readonly knockoutLegs: Prisma.FieldRef<"Competition", 'Int'>
+  readonly groupCount: Prisma.FieldRef<"Competition", 'Int'>
+  readonly teamsPerGroup: Prisma.FieldRef<"Competition", 'Int'>
+  readonly qualifiersPerGroup: Prisma.FieldRef<"Competition", 'Int'>
   readonly type: Prisma.FieldRef<"Competition", 'CompetitionType'>
   readonly format: Prisma.FieldRef<"Competition", 'CompetitionFormat'>
   readonly status: Prisma.FieldRef<"Competition", 'CompetitionStatus'>
