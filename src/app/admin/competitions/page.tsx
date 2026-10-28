@@ -21,7 +21,9 @@ import {
   Info,
   ChevronDown,
   ChevronUp,
+  Search,
 } from "lucide-react";
+import { CountryFlag, SUPPORTED_COUNTRIES } from "@/components/CountryFlag";
 
 interface TeamItem {
   id: string;
@@ -107,8 +109,16 @@ export default function AdminCompetitionsPage() {
   // Link Player form state
   const [linkPlayerSearch, setLinkPlayerSearch] = useState("");
   const [linkSelectedPlayerId, setLinkSelectedPlayerId] = useState("");
+  const [linkSelectedTeamId, setLinkSelectedTeamId] = useState<string | null>(null);
   const [linkTeamName, setLinkTeamName] = useState("");
+  const [linkTeamSearch, setLinkTeamSearch] = useState("");
   const [linkTeamLogoUrl, setLinkTeamLogoUrl] = useState("");
+  const [linkIsCustomTeam, setLinkIsCustomTeam] = useState(false);
+  const [linkAdminOverride, setLinkAdminOverride] = useState(false);
+  const [linkNationality, setLinkNationality] = useState("");
+  const [linkNationSearch, setLinkNationSearch] = useState("");
+  const [teamDropdownOpen, setTeamDropdownOpen] = useState(false);
+  const [nationDropdownOpen, setNationDropdownOpen] = useState(false);
 
   // Create Team form state
   const [newTeamName, setNewTeamName] = useState("");
@@ -119,11 +129,19 @@ export default function AdminCompetitionsPage() {
 
   const loadCompetitions = async () => {
     try {
-      const res = await fetch("/api/competitions");
+      const res = await fetch("/api/competitions", { cache: "no-store" });
       const data = await res.json();
-      setCompetitions(data.competitions || []);
-      if (data.competitions?.length > 0 && !selectedComp) {
-        selectCompetition(data.competitions[0]);
+      const list: Competition[] = data.competitions || [];
+      setCompetitions(list);
+      if (list.length > 0) {
+        if (!selectedComp) {
+          selectCompetition(list[0]);
+        } else {
+          const fresh = list.find((c) => c.id === selectedComp.id);
+          if (fresh) {
+            setSelectedComp(fresh);
+          }
+        }
       }
     } catch (err) {
       console.error("Failed to load competitions:", err);
@@ -134,7 +152,7 @@ export default function AdminCompetitionsPage() {
 
   const loadAllPlayers = async () => {
     try {
-      const res = await fetch("/api/admin/players");
+      const res = await fetch("/api/admin/players", { cache: "no-store" });
       const data = await res.json();
       setAllPlayers(data.players || []);
     } catch (err) {
@@ -147,8 +165,8 @@ export default function AdminCompetitionsPage() {
     setDetailLoading(true);
     try {
       const [compRes, partRes] = await Promise.all([
-        fetch(`/api/competitions/${comp.id}`),
-        fetch(`/api/admin/competitions/${comp.id}/participants`),
+        fetch(`/api/competitions/${comp.id}`, { cache: "no-store" }),
+        fetch(`/api/admin/competitions/${comp.id}/participants`, { cache: "no-store" }),
       ]);
       const compData = await compRes.json();
       const partData = await partRes.json();
@@ -161,6 +179,49 @@ export default function AdminCompetitionsPage() {
     } finally {
       setDetailLoading(false);
     }
+  };
+
+  const handleDeleteCompetition = async () => {
+    if (!selectedComp) return;
+    if (
+      !confirm(
+        `Are you sure you want to permanently delete tournament "${selectedComp.name}"?\n\nThis will remove the competition along with all enrolled participants, matches, and team records.`
+      )
+    ) {
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/admin/competitions/${selectedComp.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete competition.");
+
+      alert(data.message || "Competition deleted successfully.");
+      setSelectedComp(null);
+      await loadCompetitions();
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Failed to delete competition.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const openLinkPlayerModal = () => {
+    setLinkSelectedPlayerId("");
+    setLinkSelectedTeamId(null);
+    setLinkTeamName("");
+    setLinkTeamSearch("");
+    setLinkTeamLogoUrl("");
+    setLinkNationality("");
+    setLinkNationSearch("");
+    setLinkIsCustomTeam(false);
+    setLinkAdminOverride(false);
+    setTeamDropdownOpen(false);
+    setNationDropdownOpen(false);
+    setLinkPlayerOpen(true);
   };
 
   useEffect(() => {
@@ -402,6 +463,24 @@ export default function AdminCompetitionsPage() {
   const handleLinkPlayer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedComp || !linkSelectedPlayerId) return;
+
+    // Check if team is taken and override is off
+    if (linkTeamName && !linkAdminOverride) {
+      const taken = participants.find(
+        (p) =>
+          (p.status === "APPROVED" || p.status === "PENDING") &&
+          p.playerId !== linkSelectedPlayerId &&
+          ((linkSelectedTeamId && p.teamId === linkSelectedTeamId) ||
+            (p.teamName && p.teamName.trim().toLowerCase() === linkTeamName.trim().toLowerCase()))
+      );
+      if (taken) {
+        alert(
+          `Team "${linkTeamName}" is already taken by @${taken.player.username}. Check "Admin Override" to assign it anyway.`
+        );
+        return;
+      }
+    }
+
     setSubmitting(true);
 
     try {
@@ -410,8 +489,10 @@ export default function AdminCompetitionsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           playerId: linkSelectedPlayerId,
-          teamName: linkTeamName,
-          teamLogoUrl: linkTeamLogoUrl,
+          teamId: linkSelectedTeamId || undefined,
+          teamName: linkTeamName || null,
+          teamLogoUrl: linkTeamLogoUrl || null,
+          nationality: linkNationality || undefined,
         }),
       });
       const data = await res.json();
@@ -419,8 +500,14 @@ export default function AdminCompetitionsPage() {
 
       setLinkPlayerOpen(false);
       setLinkSelectedPlayerId("");
+      setLinkSelectedTeamId(null);
       setLinkTeamName("");
+      setLinkTeamSearch("");
       setLinkTeamLogoUrl("");
+      setLinkNationality("");
+      setLinkNationSearch("");
+      setLinkIsCustomTeam(false);
+      setLinkAdminOverride(false);
       selectCompetition(selectedComp);
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "Failed to link player.");
@@ -604,6 +691,15 @@ export default function AdminCompetitionsPage() {
                       <Edit className="w-3.5 h-3.5" /> Edit
                     </button>
 
+                    <button
+                      onClick={handleDeleteCompetition}
+                      disabled={submitting}
+                      className="flex items-center gap-1 px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-200 hover:text-white font-bold text-xs uppercase tracking-wider rounded-xl transition border border-red-500/30 disabled:opacity-50"
+                      title="Delete competition"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Delete
+                    </button>
+
                     {selectedComp.status === "REGISTRATION_OPEN" && (
                       <button
                         onClick={handleCloseRegistration}
@@ -710,7 +806,7 @@ export default function AdminCompetitionsPage() {
                       <Plus className="w-3.5 h-3.5" /> New Team
                     </button>
                     <button
-                      onClick={() => setLinkPlayerOpen(true)}
+                      onClick={openLinkPlayerModal}
                       className="px-3.5 py-1.5 bg-[#00b4ff] hover:bg-[#009bdc] text-[#0a1128] rounded-lg text-xs font-black uppercase tracking-wider transition flex items-center gap-1 shadow-sm"
                     >
                       <Plus className="w-3.5 h-3.5" /> Link Player
@@ -1196,6 +1292,7 @@ export default function AdminCompetitionsPage() {
             </div>
 
             <form onSubmit={handleLinkPlayer} className="space-y-4 mt-4 text-xs font-semibold">
+              {/* Select Player */}
               <div>
                 <label className="block text-gray-700 font-bold mb-1">Select Player *</label>
                 <input
@@ -1209,10 +1306,18 @@ export default function AdminCompetitionsPage() {
                   required
                   value={linkSelectedPlayerId}
                   onChange={(e) => {
-                    setLinkSelectedPlayerId(e.target.value);
-                    const selected = allPlayers.find((p) => p.id === e.target.value);
-                    if (selected && !linkTeamName) {
-                      setLinkTeamName(selected.teamName);
+                    const pid = e.target.value;
+                    setLinkSelectedPlayerId(pid);
+                    const selected = allPlayers.find((p) => p.id === pid);
+                    if (selected) {
+                      if (selected.nationality) {
+                        setLinkNationality(selected.nationality);
+                        setLinkNationSearch(`${selected.nationality}`);
+                      }
+                      if (!linkTeamName && !linkSelectedTeamId) {
+                        setLinkTeamName(selected.teamName);
+                        setLinkTeamSearch(selected.teamName);
+                      }
                     }
                   }}
                   className="w-full px-3 py-2 border rounded-lg font-bold"
@@ -1226,37 +1331,247 @@ export default function AdminCompetitionsPage() {
                 </select>
               </div>
 
+              {/* Team Name in this Competition (Searchable Dropdown) */}
               <div>
-                <label className="block text-gray-700 font-bold mb-1">
-                  Team Name in this Competition
-                </label>
-                <input
-                  type="text"
-                  value={linkTeamName}
-                  onChange={(e) => setLinkTeamName(e.target.value)}
-                  placeholder="e.g. Arsenal FC / Real Madrid"
-                  className="w-full px-3 py-2 border rounded-lg"
-                />
-                {teams.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-1.5">
-                    <span className="text-[10px] text-gray-400 mr-1">Existing teams:</span>
-                    {teams.map((t) => (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => {
-                          setLinkTeamName(t.name);
-                          if (t.logoUrl) setLinkTeamLogoUrl(t.logoUrl);
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-gray-700 font-bold">
+                    Team in this Competition *
+                  </label>
+                  {linkIsCustomTeam ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLinkIsCustomTeam(false);
+                        setLinkTeamName("");
+                        setLinkTeamSearch("");
+                        setLinkSelectedTeamId(null);
+                      }}
+                      className="text-[10px] text-blue-600 hover:underline font-bold"
+                    >
+                      ← Pick from existing teams
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLinkIsCustomTeam(true);
+                        setLinkSelectedTeamId(null);
+                        setLinkTeamName("");
+                        setLinkTeamSearch("");
+                        setTeamDropdownOpen(false);
+                      }}
+                      className="text-[10px] text-blue-600 hover:underline font-bold"
+                    >
+                      + Create new team
+                    </button>
+                  )}
+                </div>
+
+                {linkIsCustomTeam ? (
+                  <div>
+                    <input
+                      type="text"
+                      required
+                      value={linkTeamName}
+                      onChange={(e) => setLinkTeamName(e.target.value)}
+                      placeholder="e.g. Manchester City / Paris Saint-Germain"
+                      className="w-full px-3 py-2 border rounded-lg font-bold"
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">
+                      This will register a new team in this tournament table.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white">
+                      <Search className="w-4 h-4 text-gray-400 shrink-0" />
+                      <input
+                        type="text"
+                        value={linkTeamSearch}
+                        onChange={(e) => {
+                          setLinkTeamSearch(e.target.value);
+                          setLinkTeamName(e.target.value);
+                          setLinkSelectedTeamId(null);
+                          setTeamDropdownOpen(true);
                         }}
-                        className="text-[10px] bg-gray-100 hover:bg-blue-50 px-2 py-0.5 rounded text-gray-700 border"
+                        onFocus={() => setTeamDropdownOpen(true)}
+                        placeholder="Search existing tournament teams..."
+                        className="w-full text-xs font-bold focus:outline-none"
+                      />
+                      {linkSelectedTeamId && (
+                        <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded shrink-0">
+                          Selected
+                        </span>
+                      )}
+                    </div>
+
+                    {teamDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-1 divide-y divide-gray-50">
+                        {teams.length === 0 ? (
+                          <div className="p-3 text-center text-gray-400 text-[11px]">
+                            No teams in this competition yet.
+                          </div>
+                        ) : (
+                          teams
+                            .filter((t) =>
+                              t.name.toLowerCase().includes(linkTeamSearch.toLowerCase())
+                            )
+                            .map((t) => {
+                              const takenPart = participants.find(
+                                (p) =>
+                                  (p.status === "APPROVED" || p.status === "PENDING") &&
+                                  p.playerId !== linkSelectedPlayerId &&
+                                  ((p.teamId && p.teamId === t.id) ||
+                                    (p.teamName &&
+                                      p.teamName.trim().toLowerCase() === t.name.trim().toLowerCase()))
+                              );
+                              const isTaken = Boolean(takenPart);
+
+                              return (
+                                <div
+                                  key={t.id}
+                                  onClick={() => {
+                                    if (isTaken && !linkAdminOverride) {
+                                      alert(
+                                        `This team is already claimed by @${takenPart?.player.username}. Check "Admin Override" below to assign anyway.`
+                                      );
+                                      return;
+                                    }
+                                    setLinkSelectedTeamId(t.id);
+                                    setLinkTeamName(t.name);
+                                    setLinkTeamSearch(t.name);
+                                    if (t.logoUrl) setLinkTeamLogoUrl(t.logoUrl);
+                                    setTeamDropdownOpen(false);
+                                  }}
+                                  className={`flex items-center justify-between p-2 rounded cursor-pointer transition ${
+                                    isTaken && !linkAdminOverride
+                                      ? "bg-gray-50 text-gray-400 hover:bg-gray-100 cursor-not-allowed"
+                                      : "hover:bg-blue-50 text-gray-800"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    {t.logoUrl ? (
+                                      <img
+                                        src={t.logoUrl}
+                                        alt={t.name}
+                                        className="w-5 h-5 object-contain"
+                                      />
+                                    ) : (
+                                      <Shield className="w-4 h-4 text-gray-400" />
+                                    )}
+                                    <span className="font-bold">{t.name}</span>
+                                  </div>
+                                  {isTaken && (
+                                    <span
+                                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${
+                                        linkAdminOverride
+                                          ? "bg-amber-100 text-amber-900 border-amber-300"
+                                          : "bg-gray-200 text-gray-600 border-gray-300"
+                                      }`}
+                                    >
+                                      Taken by @{takenPart?.player.username}
+                                      {linkAdminOverride && " (Override)"}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })
+                        )}
+
+                        <div
+                          onClick={() => {
+                            setLinkIsCustomTeam(true);
+                            setLinkSelectedTeamId(null);
+                            setLinkTeamName("");
+                            setLinkTeamSearch("");
+                            setTeamDropdownOpen(false);
+                          }}
+                          className="p-2 text-blue-600 hover:bg-blue-50 font-bold flex items-center gap-1 cursor-pointer text-xs"
+                        >
+                          <Plus className="w-3.5 h-3.5" /> + Create new team
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Admin Override Checkbox */}
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="checkbox"
+                        id="linkAdminOverride"
+                        checked={linkAdminOverride}
+                        onChange={(e) => setLinkAdminOverride(e.target.checked)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label
+                        htmlFor="linkAdminOverride"
+                        className="text-[11px] font-bold text-gray-600 cursor-pointer select-none"
                       >
-                        {t.name}
-                      </button>
-                    ))}
+                        Admin Override (allow assigning taken teams)
+                      </label>
+                    </div>
                   </div>
                 )}
               </div>
 
+              {/* Nationality Searchable Dropdown */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-1">
+                  Player Nationality (ISO Code)
+                </label>
+                <div className="relative">
+                  <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white">
+                    <CountryFlag countryCode={linkNationality} className="w-5 h-5 shrink-0" />
+                    <input
+                      type="text"
+                      value={linkNationSearch}
+                      onChange={(e) => {
+                        setLinkNationSearch(e.target.value);
+                        setNationDropdownOpen(true);
+                      }}
+                      onFocus={() => setNationDropdownOpen(true)}
+                      placeholder={
+                        linkNationality
+                          ? `${linkNationality} - Click or search to change country`
+                          : "Search nation by name or code (e.g. Nigeria, NG, Spain)..."
+                      }
+                      className="w-full text-xs font-bold focus:outline-none"
+                    />
+                    {linkNationality && (
+                      <span className="text-[10px] bg-blue-100 text-blue-800 font-mono font-bold px-1.5 py-0.5 rounded">
+                        {linkNationality}
+                      </span>
+                    )}
+                  </div>
+
+                  {nationDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-1 divide-y divide-gray-50">
+                      {SUPPORTED_COUNTRIES.filter(
+                        (c) =>
+                          c.name.toLowerCase().includes(linkNationSearch.toLowerCase()) ||
+                          c.code.toLowerCase().includes(linkNationSearch.toLowerCase())
+                      ).map((c) => (
+                        <div
+                          key={c.code}
+                          onClick={() => {
+                            setLinkNationality(c.code);
+                            setLinkNationSearch(`${c.name} (${c.code})`);
+                            setNationDropdownOpen(false);
+                          }}
+                          className="flex items-center gap-2.5 p-2 hover:bg-blue-50 rounded cursor-pointer text-xs transition"
+                        >
+                          <CountryFlag countryCode={c.code} className="w-4 h-4 shrink-0" />
+                          <span className="font-bold text-gray-800">{c.name}</span>
+                          <span className="font-mono text-gray-400 text-[10px] ml-auto">
+                            {c.code}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Team Crest Logo */}
               <div>
                 <label className="block text-gray-700 font-bold mb-1">
                   Team Crest Logo (Upload)
@@ -1265,11 +1580,17 @@ export default function AdminCompetitionsPage() {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleFileUpload(e, "team-logos", (url) => setLinkTeamLogoUrl(url))}
+                    onChange={(e) =>
+                      handleFileUpload(e, "team-logos", (url) => setLinkTeamLogoUrl(url))
+                    }
                     className="text-xs"
                   />
                   {linkTeamLogoUrl && (
-                    <img src={linkTeamLogoUrl} alt="Team Logo" className="w-7 h-7 object-contain border" />
+                    <img
+                      src={linkTeamLogoUrl}
+                      alt="Team Logo"
+                      className="w-7 h-7 object-contain border rounded"
+                    />
                   )}
                 </div>
               </div>

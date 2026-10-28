@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/db";
 import { getAdminSession, checkAdminPermission } from "@/lib/auth-admin";
 import { createAuditLog } from "@/lib/audit";
@@ -82,6 +83,10 @@ export async function POST(req: Request) {
       targetId: competition.id,
       newValue: competition,
     });
+
+    revalidatePath("/admin/competitions");
+    revalidatePath("/portal/competitions");
+    revalidatePath("/");
 
     return NextResponse.json({ success: true, competition });
   } catch (error) {

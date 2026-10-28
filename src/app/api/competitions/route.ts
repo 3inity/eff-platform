@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -15,9 +17,16 @@ export async function GET(req: Request) {
       where,
       orderBy: { createdAt: "desc" },
       include: {
+        teams: true,
         participants: {
           include: {
             team: true,
+            player: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
           },
         },
         _count: {

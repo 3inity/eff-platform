@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/db";
 import { getAdminSession, checkAdminPermission } from "@/lib/auth-admin";
 import { createAuditLog } from "@/lib/audit";
@@ -36,6 +37,11 @@ export async function POST(
       oldValue: { status: competition.status },
       newValue: { status: updated.status },
     });
+
+    revalidatePath(`/competition/${id}`);
+    revalidatePath("/admin/competitions");
+    revalidatePath("/portal/competitions");
+    revalidatePath("/");
 
     return NextResponse.json({ success: true, competition: updated });
   } catch (error) {

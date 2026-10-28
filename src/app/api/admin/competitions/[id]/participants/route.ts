@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/db";
 import { getAdminSession, checkAdminPermission } from "@/lib/auth-admin";
 import { createAuditLog } from "@/lib/audit";
@@ -52,7 +53,7 @@ export async function POST(
 
     const { id: competitionId } = await params;
     const body = await req.json();
-    const { playerId, teamName, teamLogoUrl } = body;
+    const { playerId, teamId: reqTeamId, teamName, teamLogoUrl, nationality } = body;
 
     if (!playerId) {
       return NextResponse.json({ error: "Player ID is required." }, { status: 400 });
@@ -83,12 +84,26 @@ export async function POST(
       );
     }
 
-    let teamId: string | null = null;
+    // Optionally update player nationality if selected
+    if (nationality) {
+      await prisma.player.update({
+        where: { id: playerId },
+        data: { nationality: String(nationality).toUpperCase().trim() },
+      });
+    }
+
+    let teamId: string | null = reqTeamId || null;
     let finalTeamName = teamName ? teamName.trim() : null;
     let finalTeamLogoUrl = teamLogoUrl ? teamLogoUrl.trim() : null;
 
-    // If a teamName is provided, find or create the Team for this competition
-    if (finalTeamName) {
+    if (teamId) {
+      const existingTeam = await prisma.team.findUnique({ where: { id: teamId } });
+      if (existingTeam) {
+        finalTeamName = existingTeam.name;
+        finalTeamLogoUrl = finalTeamLogoUrl || existingTeam.logoUrl;
+      }
+    } else if (finalTeamName) {
+      // Find or create team by name in this competition
       let team = await prisma.team.findUnique({
         where: {
           competitionId_name: {
@@ -140,8 +155,14 @@ export async function POST(
         competition: competition.name,
         player: participant.player.username,
         teamName: finalTeamName,
+        nationality: nationality || null,
       },
     });
+
+    revalidatePath(`/competition/${competitionId}`);
+    revalidatePath("/admin/competitions");
+    revalidatePath("/portal/competitions");
+    revalidatePath("/");
 
     return NextResponse.json({ success: true, participant });
   } catch (error) {
@@ -152,3 +173,4 @@ export async function POST(
     );
   }
 }
+

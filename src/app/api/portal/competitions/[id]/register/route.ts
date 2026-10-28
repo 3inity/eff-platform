@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/db";
 import { getPlayerSession } from "@/lib/auth-player";
 
@@ -13,11 +14,25 @@ export async function POST(
     }
 
     const { id: competitionId } = await params;
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch {
+      // Body may be empty if simple request
+    }
+    const { teamId: reqTeamId, teamName: reqTeamName, teamLogoUrl: reqTeamLogoUrl } = body;
 
     const competition = await prisma.competition.findUnique({
       where: { id: competitionId },
       include: {
-        participants: true,
+        participants: {
+          include: {
+            player: {
+              select: { id: true, username: true },
+            },
+          },
+        },
+        teams: true,
       },
     });
 
@@ -61,19 +76,89 @@ export async function POST(
       );
     }
 
-    // 4. Check if already registered
+    // 4. Resolve team and verify it is not taken
+    let teamId: string | null = reqTeamId || null;
+    let finalTeamName: string | null = reqTeamName ? reqTeamName.trim() : null;
+    let finalTeamLogoUrl: string | null = reqTeamLogoUrl ? reqTeamLogoUrl.trim() : null;
+
+    if (teamId) {
+      const selectedTeam = competition.teams.find((t) => t.id === teamId);
+      if (selectedTeam) {
+        finalTeamName = selectedTeam.name;
+        finalTeamLogoUrl = finalTeamLogoUrl || selectedTeam.logoUrl;
+      }
+    }
+
+    // Check if team is taken by another active participant in this competition
+    if (finalTeamName || teamId) {
+      const takenBy = competition.participants.find(
+        (p) =>
+          p.playerId !== session.playerId &&
+          (p.status === "APPROVED" || p.status === "PENDING") &&
+          ((teamId && p.teamId === teamId) ||
+            (finalTeamName && p.teamName?.toLowerCase() === finalTeamName.toLowerCase()))
+      );
+
+      if (takenBy) {
+        return NextResponse.json(
+          {
+            error: `Team "${finalTeamName || "selected"}" has already been taken by @${
+              takenBy.player.username
+            }. Please choose another team.`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // If a new team name was entered without existing teamId, create the Team record
+    if (finalTeamName && !teamId) {
+      let team = await prisma.team.findUnique({
+        where: {
+          competitionId_name: {
+            competitionId,
+            name: finalTeamName,
+          },
+        },
+      });
+
+      if (!team) {
+        team = await prisma.team.create({
+          data: {
+            competitionId,
+            name: finalTeamName,
+            logoUrl: finalTeamLogoUrl || null,
+          },
+        });
+      }
+      teamId = team.id;
+    }
+
+    // 5. Check if already registered
     const existing = competition.participants.find(
       (p) => p.playerId === session.playerId
     );
 
+    const status = competition.requiresApproval ? "PENDING" : "APPROVED";
+
     if (existing) {
       if (existing.status === "WITHDRAWN") {
-        // Re-activate registration
-        const newStatus = competition.requiresApproval ? "PENDING" : "APPROVED";
+        // Re-activate registration and assign selected team
         const updated = await prisma.competitionParticipant.update({
           where: { id: existing.id },
-          data: { status: newStatus },
+          data: {
+            status,
+            teamId: teamId || existing.teamId,
+            teamName: finalTeamName || existing.teamName,
+            teamLogoUrl: finalTeamLogoUrl || existing.teamLogoUrl,
+          },
         });
+
+        revalidatePath(`/competition/${competitionId}`);
+        revalidatePath("/admin/competitions");
+        revalidatePath("/portal/competitions");
+        revalidatePath("/");
+
         return NextResponse.json({
           success: true,
           participant: updated,
@@ -84,20 +169,27 @@ export async function POST(
       }
 
       return NextResponse.json(
-        { error: `You are already registered with status: ${existing.status}.` },
+        { error: `You are already registered with status: ${existing.status}. Your team is locked.` },
         { status: 400 }
       );
     }
 
-    // 5. Create participant
-    const status = competition.requiresApproval ? "PENDING" : "APPROVED";
+    // 6. Create participant
     const participant = await prisma.competitionParticipant.create({
       data: {
         competitionId,
         playerId: session.playerId,
+        teamId,
+        teamName: finalTeamName,
+        teamLogoUrl: finalTeamLogoUrl,
         status,
       },
     });
+
+    revalidatePath(`/competition/${competitionId}`);
+    revalidatePath("/admin/competitions");
+    revalidatePath("/portal/competitions");
+    revalidatePath("/");
 
     return NextResponse.json({
       success: true,
@@ -114,3 +206,4 @@ export async function POST(
     );
   }
 }
+

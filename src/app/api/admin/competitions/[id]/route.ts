@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/db";
 import { getAdminSession, checkAdminPermission } from "@/lib/auth-admin";
 import { createAuditLog } from "@/lib/audit";
@@ -63,6 +64,11 @@ export async function PATCH(
       newValue: updated,
     });
 
+    revalidatePath(`/competition/${id}`);
+    revalidatePath("/admin/competitions");
+    revalidatePath("/portal/competitions");
+    revalidatePath("/");
+
     return NextResponse.json({ success: true, competition: updated });
   } catch (error) {
     console.error("PATCH /api/admin/competitions/[id] error:", error);
@@ -72,3 +78,71 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getAdminSession(req);
+    if (!session || !checkAdminPermission(session.role, ["SUPER_ADMIN", "MATCH_ADMIN"])) {
+      return NextResponse.json({ error: "Unauthorized permission. SUPER_ADMIN or MATCH_ADMIN required." }, { status: 403 });
+    }
+
+    const { id } = await params;
+
+    const existing = await prisma.competition.findUnique({
+      where: { id },
+      include: {
+        participants: true,
+        matches: true,
+        teams: true,
+      },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Competition not found." }, { status: 404 });
+    }
+
+    // Write audit log before deleting
+    await createAuditLog({
+      adminId: session.adminId,
+      actionType: "DELETE_COMPETITION",
+      targetTable: "Competition",
+      targetId: id,
+      oldValue: {
+        id: existing.id,
+        name: existing.name,
+        season: existing.season,
+        type: existing.type,
+        format: existing.format,
+        status: existing.status,
+        participantsCount: existing.participants.length,
+        matchesCount: existing.matches.length,
+        teamsCount: existing.teams.length,
+      },
+      newValue: { deletedAt: new Date().toISOString(), deletedBy: session.username },
+    });
+
+    // Database foreign keys cascade delete participants, matches, teams
+    await prisma.competition.delete({
+      where: { id },
+    });
+
+    revalidatePath("/admin/competitions");
+    revalidatePath("/portal/competitions");
+    revalidatePath("/");
+
+    return NextResponse.json({
+      success: true,
+      message: `Competition "${existing.name}" and all associated records have been permanently deleted.`,
+    });
+  } catch (error) {
+    console.error("DELETE /api/admin/competitions/[id] error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete competition." },
+      { status: 500 }
+    );
+  }
+}
+
