@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Countdown } from "@/components/Countdown";
+import { SearchableTeamSelect } from "@/components/SearchableTeamSelect";
+import { getCanonicalTeamId } from "@/lib/teams";
 import {
   Trophy,
   Users,
@@ -77,6 +79,22 @@ export default function PortalCompetitionsPage() {
   const [teamDropdownOpen, setTeamDropdownOpen] = useState(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  // Slugs of clubs already taken in the competition being registered for
+  const takenSlugsInModal = useMemo(() => {
+    if (!registerModalComp) return [];
+    const slugs: string[] = [];
+    for (const p of registerModalComp.participants) {
+      if (p.status === "APPROVED" || p.status === "PENDING") {
+        if (p.playerId !== currentUserId) {
+          const teamIdentifier = p.teamId || p.teamName || p.team?.name;
+          const canonical = getCanonicalTeamId(teamIdentifier);
+          if (canonical) slugs.push(canonical);
+        }
+      }
+    }
+    return slugs;
+  }, [registerModalComp, currentUserId]);
 
   const loadData = async () => {
     try {
@@ -518,183 +536,29 @@ export default function PortalCompetitionsPage() {
 
             <form onSubmit={submitRegistration} className="space-y-4 mt-4 text-xs font-semibold">
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-gray-700 font-bold">
-                    Choose Your Tournament Team *
-                  </label>
-                  {isCustomTeam ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsCustomTeam(false);
-                        setSelectedTeamId(null);
-                        setSelectedTeamName("");
-                        setTeamSearchQuery("");
-                      }}
-                      className="text-[11px] text-blue-600 hover:underline font-bold"
-                    >
-                      ← Available Teams
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsCustomTeam(true);
-                        setSelectedTeamId(null);
-                        setSelectedTeamName("");
-                        setTeamSearchQuery("");
-                        setTeamDropdownOpen(false);
-                      }}
-                      className="text-[11px] text-blue-600 hover:underline font-bold"
-                    >
-                      + Custom team name
-                    </button>
-                  )}
-                </div>
+                <label className="block text-gray-700 font-bold mb-1.5">
+                  Choose Your Tournament Club <span className="text-red-500">*</span>
+                </label>
 
-                {isCustomTeam ? (
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      required
-                      value={selectedTeamName}
-                      onChange={(e) => {
-                        setSelectedTeamName(e.target.value);
-                        setRegisterError(null);
-                      }}
-                      placeholder="e.g. Paris Saint-Germain / Arsenal FC"
-                      className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl font-bold text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    />
-                    <div>
-                      <label className="block text-gray-500 text-[10px] font-bold uppercase mb-1">
-                        Team Crest Logo (Optional)
-                      </label>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileUpload}
-                          className="text-xs"
-                        />
-                        {selectedTeamLogoUrl && (
-                          <img
-                            src={selectedTeamLogoUrl}
-                            alt="Logo"
-                            className="w-7 h-7 object-contain border rounded"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <div className="flex items-center gap-2 border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white">
-                      <Search className="w-4 h-4 text-gray-400 shrink-0" />
-                      <input
-                        type="text"
-                        value={teamSearchQuery}
-                        onChange={(e) => {
-                          setTeamSearchQuery(e.target.value);
-                          setSelectedTeamName(e.target.value);
-                          setSelectedTeamId(null);
-                          setTeamDropdownOpen(true);
-                          setRegisterError(null);
-                        }}
-                        onFocus={() => setTeamDropdownOpen(true)}
-                        placeholder="Search tournament teams..."
-                        className="w-full text-xs font-bold focus:outline-none"
-                      />
-                      {selectedTeamId && (
-                        <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded shrink-0">
-                          Selected
-                        </span>
-                      )}
-                    </div>
-
-                    {teamDropdownOpen && (
-                      <div className="absolute top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white border border-gray-200 rounded-xl shadow-xl z-50 p-1 divide-y divide-gray-50">
-                        {(() => {
-                          const allTeams = registerModalComp.teams || [];
-                          const filtered = allTeams.filter((t) =>
-                            t.name.toLowerCase().includes(teamSearchQuery.toLowerCase())
-                          );
-
-                          if (filtered.length === 0) {
-                            return (
-                              <div className="p-3 text-center text-gray-400 text-[11px]">
-                                No matching available teams. Click "+ Custom team name" above to enter yours.
-                              </div>
-                            );
-                          }
-
-                          return filtered.map((t) => {
-                            const taken = registerModalComp.participants.find(
-                              (p) =>
-                                (p.status === "APPROVED" || p.status === "PENDING") &&
-                                p.playerId !== currentUserId &&
-                                ((p.teamId && p.teamId === t.id) ||
-                                  (p.teamName &&
-                                    p.teamName.trim().toLowerCase() === t.name.trim().toLowerCase()))
-                            );
-                            const isTaken = Boolean(taken);
-
-                            return (
-                              <div
-                                key={t.id}
-                                onClick={() => {
-                                  if (isTaken) {
-                                    setRegisterError(
-                                      `Team "${t.name}" has already been taken by @${
-                                        taken?.player?.username || "another competitor"
-                                      }.`
-                                    );
-                                    return;
-                                  }
-                                  setSelectedTeamId(t.id);
-                                  setSelectedTeamName(t.name);
-                                  setTeamSearchQuery(t.name);
-                                  if (t.logoUrl) setSelectedTeamLogoUrl(t.logoUrl);
-                                  setTeamDropdownOpen(false);
-                                  setRegisterError(null);
-                                }}
-                                className={`flex items-center justify-between p-2.5 rounded-lg transition ${
-                                  isTaken
-                                    ? "bg-gray-50 text-gray-400 cursor-not-allowed opacity-60"
-                                    : "hover:bg-blue-50 text-gray-800 cursor-pointer"
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  {t.logoUrl ? (
-                                    <img
-                                      src={t.logoUrl}
-                                      alt={t.name}
-                                      className="w-5 h-5 object-contain"
-                                    />
-                                  ) : (
-                                    <Shield className="w-4 h-4 text-gray-400" />
-                                  )}
-                                  <span className="font-bold">{t.name}</span>
-                                </div>
-                                {isTaken ? (
-                                  <span className="text-[9px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
-                                    Taken
-                                  </span>
-                                ) : (
-                                  <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                                    Available
-                                  </span>
-                                )}
-                              </div>
-                            );
-                          });
-                        })()}
-                      </div>
-                    )}
-                  </div>
-                )}
+                <SearchableTeamSelect
+                  value={selectedTeamName}
+                  takenTeamSlugs={takenSlugsInModal}
+                  onChange={(team) => {
+                    if (team) {
+                      setSelectedTeamName(team.name);
+                      setSelectedTeamId(team.id);
+                    } else {
+                      setSelectedTeamName("");
+                      setSelectedTeamId(null);
+                    }
+                    setRegisterError(null);
+                  }}
+                  placeholder="Search club by name or alias (e.g. Man City, Chelsea, Enyimba)..."
+                  required
+                />
 
                 <p className="text-[10px] text-gray-400 mt-1.5">
-                  ⚠️ Note: Once registered, your team identity is locked for the duration of this competition.
+                  ⚠️ Note: Clubs already claimed in this tournament are excluded to prevent naming conflicts. Your team is locked upon enrollment.
                 </p>
               </div>
 

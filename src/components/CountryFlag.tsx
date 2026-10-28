@@ -49,6 +49,10 @@ export const SUPPORTED_COUNTRIES: SupportedCountry[] = [
 const flagMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
   NG: FlagNg,
   GB: FlagGb,
+  "GB-ENG": FlagGb,
+  "GB-SCT": FlagGb,
+  "GB-WLS": FlagGb,
+  "GB-NIR": FlagGb,
   UK: FlagGb,
   GH: FlagGh,
   ZA: FlagZa,

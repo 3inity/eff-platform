@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/db";
 import { getPlayerSession } from "@/lib/auth-player";
+import { findBundledTeam, findConflictingParticipant } from "@/lib/teams";
 
 export async function POST(
   req: Request,
@@ -81,6 +82,11 @@ export async function POST(
     let finalTeamName: string | null = reqTeamName ? reqTeamName.trim() : null;
     let finalTeamLogoUrl: string | null = reqTeamLogoUrl ? reqTeamLogoUrl.trim() : null;
 
+    const bundled = findBundledTeam(reqTeamId || reqTeamName);
+    if (bundled) {
+      finalTeamName = bundled.name;
+    }
+
     if (teamId) {
       const selectedTeam = competition.teams.find((t) => t.id === teamId);
       if (selectedTeam) {
@@ -89,24 +95,23 @@ export async function POST(
       }
     }
 
-    // Check if team is taken by another active participant in this competition
-    if (finalTeamName || teamId) {
-      const takenBy = competition.participants.find(
-        (p) =>
-          p.playerId !== session.playerId &&
-          (p.status === "APPROVED" || p.status === "PENDING") &&
-          ((teamId && p.teamId === teamId) ||
-            (finalTeamName && p.teamName?.toLowerCase() === finalTeamName.toLowerCase()))
+    // Check if team is taken by another active participant in this competition (using canonical alias-aware check)
+    const candidateIdentifier = bundled ? bundled.id : (finalTeamName || teamId);
+    if (candidateIdentifier) {
+      const conflict = findConflictingParticipant(
+        candidateIdentifier,
+        competition.participants,
+        session.playerId
       );
 
-      if (takenBy) {
+      if (conflict) {
         return NextResponse.json(
           {
-            error: `Team "${finalTeamName || "selected"}" has already been taken by @${
-              takenBy.player.username
-            }. Please choose another team.`,
+            error: `This team is already taken by @${
+              conflict.player?.username || "another competitor"
+            } in this competition`,
           },
-          { status: 400 }
+          { status: 409 }
         );
       }
     }

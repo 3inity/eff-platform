@@ -1,0 +1,1057 @@
+[
+  {
+    "name": "Albania",
+    "code": "AL",
+    "fifa": "ALB"
+  },
+  {
+    "name": "Andorra",
+    "code": "AD",
+    "fifa": "AND"
+  },
+  {
+    "name": "Armenia",
+    "code": "AM",
+    "fifa": "ARM"
+  },
+  {
+    "name": "Austria",
+    "code": "AT",
+    "fifa": "AUT"
+  },
+  {
+    "name": "Azerbaijan",
+    "code": "AZ",
+    "fifa": "AZE"
+  },
+  {
+    "name": "Belarus",
+    "code": "BY",
+    "fifa": "BLR"
+  },
+  {
+    "name": "Belgium",
+    "code": "BE",
+    "fifa": "BEL"
+  },
+  {
+    "name": "Bosnia and Herzegovina",
+    "code": "BA",
+    "fifa": "BIH"
+  },
+  {
+    "name": "Bulgaria",
+    "code": "BG",
+    "fifa": "BUL"
+  },
+  {
+    "name": "Croatia",
+    "code": "HR",
+    "fifa": "CRO"
+  },
+  {
+    "name": "Cyprus",
+    "code": "CY",
+    "fifa": "CYP"
+  },
+  {
+    "name": "Czech Republic",
+    "code": "CZ",
+    "fifa": "CZE"
+  },
+  {
+    "name": "Denmark",
+    "code": "DK",
+    "fifa": "DEN"
+  },
+  {
+    "name": "England",
+    "code": "GB-ENG",
+    "fifa": "ENG"
+  },
+  {
+    "name": "Estonia",
+    "code": "EE",
+    "fifa": "EST"
+  },
+  {
+    "name": "Faroe Islands",
+    "code": "FO",
+    "fifa": "FRO"
+  },
+  {
+    "name": "Finland",
+    "code": "FI",
+    "fifa": "FIN"
+  },
+  {
+    "name": "France",
+    "code": "FR",
+    "fifa": "FRA"
+  },
+  {
+    "name": "Georgia",
+    "code": "GE",
+    "fifa": "GEO"
+  },
+  {
+    "name": "Germany",
+    "code": "DE",
+    "fifa": "GER"
+  },
+  {
+    "name": "Gibraltar",
+    "code": "GI",
+    "fifa": "GIB"
+  },
+  {
+    "name": "Greece",
+    "code": "GR",
+    "fifa": "GRE"
+  },
+  {
+    "name": "Hungary",
+    "code": "HU",
+    "fifa": "HUN"
+  },
+  {
+    "name": "Iceland",
+    "code": "IS",
+    "fifa": "ISL"
+  },
+  {
+    "name": "Israel",
+    "code": "IL",
+    "fifa": "ISR"
+  },
+  {
+    "name": "Italy",
+    "code": "IT",
+    "fifa": "ITA"
+  },
+  {
+    "name": "Kazakhstan",
+    "code": "KZ",
+    "fifa": "KAZ"
+  },
+  {
+    "name": "Kosovo",
+    "code": "XK",
+    "fifa": "KVX"
+  },
+  {
+    "name": "Latvia",
+    "code": "LV",
+    "fifa": "LVA"
+  },
+  {
+    "name": "Liechtenstein",
+    "code": "LI",
+    "fifa": "LIE"
+  },
+  {
+    "name": "Lithuania",
+    "code": "LT",
+    "fifa": "LTU"
+  },
+  {
+    "name": "Luxembourg",
+    "code": "LU",
+    "fifa": "LUX"
+  },
+  {
+    "name": "Malta",
+    "code": "MT",
+    "fifa": "MLT"
+  },
+  {
+    "name": "Moldova",
+    "code": "MD",
+    "fifa": "MDA"
+  },
+  {
+    "name": "Montenegro",
+    "code": "ME",
+    "fifa": "MNE"
+  },
+  {
+    "name": "Netherlands",
+    "code": "NL",
+    "fifa": "NED"
+  },
+  {
+    "name": "North Macedonia",
+    "code": "MK",
+    "fifa": "MKD"
+  },
+  {
+    "name": "Northern Ireland",
+    "code": "GB-NIR",
+    "fifa": "NIR"
+  },
+  {
+    "name": "Norway",
+    "code": "NO",
+    "fifa": "NOR"
+  },
+  {
+    "name": "Poland",
+    "code": "PL",
+    "fifa": "POL"
+  },
+  {
+    "name": "Portugal",
+    "code": "PT",
+    "fifa": "POR"
+  },
+  {
+    "name": "Republic of Ireland",
+    "code": "IE",
+    "fifa": "IRL"
+  },
+  {
+    "name": "Romania",
+    "code": "RO",
+    "fifa": "ROU"
+  },
+  {
+    "name": "Russia",
+    "code": "RU",
+    "fifa": "RUS"
+  },
+  {
+    "name": "San Marino",
+    "code": "SM",
+    "fifa": "SMR"
+  },
+  {
+    "name": "Scotland",
+    "code": "GB-SCT",
+    "fifa": "SCO"
+  },
+  {
+    "name": "Serbia",
+    "code": "RS",
+    "fifa": "SRB"
+  },
+  {
+    "name": "Slovakia",
+    "code": "SK",
+    "fifa": "SVK"
+  },
+  {
+    "name": "Slovenia",
+    "code": "SI",
+    "fifa": "SVN"
+  },
+  {
+    "name": "Spain",
+    "code": "ES",
+    "fifa": "ESP"
+  },
+  {
+    "name": "Sweden",
+    "code": "SE",
+    "fifa": "SWE"
+  },
+  {
+    "name": "Switzerland",
+    "code": "CH",
+    "fifa": "SUI"
+  },
+  {
+    "name": "Turkey",
+    "code": "TR",
+    "fifa": "TUR"
+  },
+  {
+    "name": "Ukraine",
+    "code": "UA",
+    "fifa": "UKR"
+  },
+  {
+    "name": "Wales",
+    "code": "GB-WLS",
+    "fifa": "WAL"
+  },
+  {
+    "name": "Algeria",
+    "code": "DZ",
+    "fifa": "ALG"
+  },
+  {
+    "name": "Angola",
+    "code": "AO",
+    "fifa": "ANG"
+  },
+  {
+    "name": "Benin",
+    "code": "BJ",
+    "fifa": "BEN"
+  },
+  {
+    "name": "Botswana",
+    "code": "BW",
+    "fifa": "BOT"
+  },
+  {
+    "name": "Burkina Faso",
+    "code": "BF",
+    "fifa": "BFA"
+  },
+  {
+    "name": "Burundi",
+    "code": "BI",
+    "fifa": "BDI"
+  },
+  {
+    "name": "Cameroon",
+    "code": "CM",
+    "fifa": "CMR"
+  },
+  {
+    "name": "Cape Verde",
+    "code": "CV",
+    "fifa": "CPV"
+  },
+  {
+    "name": "Central African Republic",
+    "code": "CF",
+    "fifa": "CTA"
+  },
+  {
+    "name": "Chad",
+    "code": "TD",
+    "fifa": "CHA"
+  },
+  {
+    "name": "Comoros",
+    "code": "KM",
+    "fifa": "COM"
+  },
+  {
+    "name": "Congo",
+    "code": "CG",
+    "fifa": "CGO"
+  },
+  {
+    "name": "DR Congo",
+    "code": "CD",
+    "fifa": "COD"
+  },
+  {
+    "name": "Djibouti",
+    "code": "DJ",
+    "fifa": "DJI"
+  },
+  {
+    "name": "Egypt",
+    "code": "EG",
+    "fifa": "EGY"
+  },
+  {
+    "name": "Equatorial Guinea",
+    "code": "GQ",
+    "fifa": "EQG"
+  },
+  {
+    "name": "Eritrea",
+    "code": "ER",
+    "fifa": "ERI"
+  },
+  {
+    "name": "Eswatini",
+    "code": "SZ",
+    "fifa": "SWZ"
+  },
+  {
+    "name": "Ethiopia",
+    "code": "ET",
+    "fifa": "ETH"
+  },
+  {
+    "name": "Gabon",
+    "code": "GA",
+    "fifa": "GAB"
+  },
+  {
+    "name": "Gambia",
+    "code": "GM",
+    "fifa": "GAM"
+  },
+  {
+    "name": "Ghana",
+    "code": "GH",
+    "fifa": "GHA"
+  },
+  {
+    "name": "Guinea",
+    "code": "GN",
+    "fifa": "GUI"
+  },
+  {
+    "name": "Guinea-Bissau",
+    "code": "GW",
+    "fifa": "GNB"
+  },
+  {
+    "name": "Ivory Coast",
+    "code": "CI",
+    "fifa": "CIV"
+  },
+  {
+    "name": "Kenya",
+    "code": "KE",
+    "fifa": "KEN"
+  },
+  {
+    "name": "Lesotho",
+    "code": "LS",
+    "fifa": "LES"
+  },
+  {
+    "name": "Liberia",
+    "code": "LR",
+    "fifa": "LBR"
+  },
+  {
+    "name": "Libya",
+    "code": "LY",
+    "fifa": "LBY"
+  },
+  {
+    "name": "Madagascar",
+    "code": "MG",
+    "fifa": "MAD"
+  },
+  {
+    "name": "Malawi",
+    "code": "MW",
+    "fifa": "MWI"
+  },
+  {
+    "name": "Mali",
+    "code": "ML",
+    "fifa": "MLI"
+  },
+  {
+    "name": "Mauritania",
+    "code": "MR",
+    "fifa": "MTN"
+  },
+  {
+    "name": "Mauritius",
+    "code": "MU",
+    "fifa": "MRI"
+  },
+  {
+    "name": "Morocco",
+    "code": "MA",
+    "fifa": "MAR"
+  },
+  {
+    "name": "Mozambique",
+    "code": "MZ",
+    "fifa": "MOZ"
+  },
+  {
+    "name": "Namibia",
+    "code": "NA",
+    "fifa": "NAM"
+  },
+  {
+    "name": "Niger",
+    "code": "NE",
+    "fifa": "NIG"
+  },
+  {
+    "name": "Nigeria",
+    "code": "NG",
+    "fifa": "NGA"
+  },
+  {
+    "name": "Rwanda",
+    "code": "RW",
+    "fifa": "RWA"
+  },
+  {
+    "name": "São Tomé and Príncipe",
+    "code": "ST",
+    "fifa": "STP"
+  },
+  {
+    "name": "Senegal",
+    "code": "SN",
+    "fifa": "SEN"
+  },
+  {
+    "name": "Seychelles",
+    "code": "SC",
+    "fifa": "SEY"
+  },
+  {
+    "name": "Sierra Leone",
+    "code": "SL",
+    "fifa": "SLE"
+  },
+  {
+    "name": "Somalia",
+    "code": "SO",
+    "fifa": "SOM"
+  },
+  {
+    "name": "South Africa",
+    "code": "ZA",
+    "fifa": "RSA"
+  },
+  {
+    "name": "South Sudan",
+    "code": "SS",
+    "fifa": "SSD"
+  },
+  {
+    "name": "Sudan",
+    "code": "SD",
+    "fifa": "SUD"
+  },
+  {
+    "name": "Tanzania",
+    "code": "TZ",
+    "fifa": "TAN"
+  },
+  {
+    "name": "Togo",
+    "code": "TG",
+    "fifa": "TOG"
+  },
+  {
+    "name": "Tunisia",
+    "code": "TN",
+    "fifa": "TUN"
+  },
+  {
+    "name": "Uganda",
+    "code": "UG",
+    "fifa": "UGA"
+  },
+  {
+    "name": "Zambia",
+    "code": "ZM",
+    "fifa": "ZAM"
+  },
+  {
+    "name": "Zimbabwe",
+    "code": "ZW",
+    "fifa": "ZIM"
+  },
+  {
+    "name": "Afghanistan",
+    "code": "AF",
+    "fifa": "AFG"
+  },
+  {
+    "name": "Australia",
+    "code": "AU",
+    "fifa": "AUS"
+  },
+  {
+    "name": "Bahrain",
+    "code": "BH",
+    "fifa": "BHR"
+  },
+  {
+    "name": "Bangladesh",
+    "code": "BD",
+    "fifa": "BAN"
+  },
+  {
+    "name": "Bhutan",
+    "code": "BT",
+    "fifa": "BHU"
+  },
+  {
+    "name": "Brunei",
+    "code": "BN",
+    "fifa": "BRU"
+  },
+  {
+    "name": "Cambodia",
+    "code": "KH",
+    "fifa": "CAM"
+  },
+  {
+    "name": "China",
+    "code": "CN",
+    "fifa": "CHN"
+  },
+  {
+    "name": "Chinese Taipei",
+    "code": "TW",
+    "fifa": "TPE"
+  },
+  {
+    "name": "Guam",
+    "code": "GU",
+    "fifa": "GUM"
+  },
+  {
+    "name": "Hong Kong",
+    "code": "HK",
+    "fifa": "HKG"
+  },
+  {
+    "name": "India",
+    "code": "IN",
+    "fifa": "IND"
+  },
+  {
+    "name": "Indonesia",
+    "code": "ID",
+    "fifa": "IDN"
+  },
+  {
+    "name": "Iran",
+    "code": "IR",
+    "fifa": "IRN"
+  },
+  {
+    "name": "Iraq",
+    "code": "IQ",
+    "fifa": "IRQ"
+  },
+  {
+    "name": "Japan",
+    "code": "JP",
+    "fifa": "JPN"
+  },
+  {
+    "name": "Jordan",
+    "code": "JO",
+    "fifa": "JOR"
+  },
+  {
+    "name": "Kuwait",
+    "code": "KW",
+    "fifa": "KUW"
+  },
+  {
+    "name": "Kyrgyzstan",
+    "code": "KG",
+    "fifa": "KGZ"
+  },
+  {
+    "name": "Laos",
+    "code": "LA",
+    "fifa": "LAO"
+  },
+  {
+    "name": "Lebanon",
+    "code": "LB",
+    "fifa": "LBN"
+  },
+  {
+    "name": "Macau",
+    "code": "MO",
+    "fifa": "MAC"
+  },
+  {
+    "name": "Malaysia",
+    "code": "MY",
+    "fifa": "MAS"
+  },
+  {
+    "name": "Maldives",
+    "code": "MV",
+    "fifa": "MDV"
+  },
+  {
+    "name": "Mongolia",
+    "code": "MN",
+    "fifa": "MNG"
+  },
+  {
+    "name": "Myanmar",
+    "code": "MM",
+    "fifa": "MYA"
+  },
+  {
+    "name": "Nepal",
+    "code": "NP",
+    "fifa": "NEP"
+  },
+  {
+    "name": "North Korea",
+    "code": "KP",
+    "fifa": "PRK"
+  },
+  {
+    "name": "Oman",
+    "code": "OM",
+    "fifa": "OMA"
+  },
+  {
+    "name": "Pakistan",
+    "code": "PK",
+    "fifa": "PAK"
+  },
+  {
+    "name": "Palestine",
+    "code": "PS",
+    "fifa": "PLE"
+  },
+  {
+    "name": "Philippines",
+    "code": "PH",
+    "fifa": "PHI"
+  },
+  {
+    "name": "Qatar",
+    "code": "QA",
+    "fifa": "QAT"
+  },
+  {
+    "name": "Saudi Arabia",
+    "code": "SA",
+    "fifa": "KSA"
+  },
+  {
+    "name": "Singapore",
+    "code": "SG",
+    "fifa": "SGP"
+  },
+  {
+    "name": "South Korea",
+    "code": "KR",
+    "fifa": "KOR"
+  },
+  {
+    "name": "Sri Lanka",
+    "code": "LK",
+    "fifa": "SRI"
+  },
+  {
+    "name": "Syria",
+    "code": "SY",
+    "fifa": "SYR"
+  },
+  {
+    "name": "Tajikistan",
+    "code": "TJ",
+    "fifa": "TJK"
+  },
+  {
+    "name": "Thailand",
+    "code": "TH",
+    "fifa": "THA"
+  },
+  {
+    "name": "Timor-Leste",
+    "code": "TL",
+    "fifa": "TLS"
+  },
+  {
+    "name": "Turkmenistan",
+    "code": "TM",
+    "fifa": "TKM"
+  },
+  {
+    "name": "United Arab Emirates",
+    "code": "AE",
+    "fifa": "UAE"
+  },
+  {
+    "name": "Uzbekistan",
+    "code": "UZ",
+    "fifa": "UZB"
+  },
+  {
+    "name": "Vietnam",
+    "code": "VN",
+    "fifa": "VIE"
+  },
+  {
+    "name": "Yemen",
+    "code": "YE",
+    "fifa": "YEM"
+  },
+  {
+    "name": "Anguilla",
+    "code": "AI",
+    "fifa": "AIA"
+  },
+  {
+    "name": "Antigua and Barbuda",
+    "code": "AG",
+    "fifa": "ATG"
+  },
+  {
+    "name": "Aruba",
+    "code": "AW",
+    "fifa": "ARU"
+  },
+  {
+    "name": "Bahamas",
+    "code": "BS",
+    "fifa": "BAH"
+  },
+  {
+    "name": "Barbados",
+    "code": "BB",
+    "fifa": "BRB"
+  },
+  {
+    "name": "Belize",
+    "code": "BZ",
+    "fifa": "BLZ"
+  },
+  {
+    "name": "Bermuda",
+    "code": "BM",
+    "fifa": "BER"
+  },
+  {
+    "name": "British Virgin Islands",
+    "code": "VG",
+    "fifa": "VGB"
+  },
+  {
+    "name": "Canada",
+    "code": "CA",
+    "fifa": "CAN"
+  },
+  {
+    "name": "Cayman Islands",
+    "code": "KY",
+    "fifa": "CAY"
+  },
+  {
+    "name": "Costa Rica",
+    "code": "CR",
+    "fifa": "CRC"
+  },
+  {
+    "name": "Cuba",
+    "code": "CU",
+    "fifa": "CUB"
+  },
+  {
+    "name": "Curaçao",
+    "code": "CW",
+    "fifa": "CUW"
+  },
+  {
+    "name": "Dominica",
+    "code": "DM",
+    "fifa": "DMA"
+  },
+  {
+    "name": "Dominican Republic",
+    "code": "DO",
+    "fifa": "DOM"
+  },
+  {
+    "name": "El Salvador",
+    "code": "SV",
+    "fifa": "SLV"
+  },
+  {
+    "name": "Grenada",
+    "code": "GD",
+    "fifa": "GRN"
+  },
+  {
+    "name": "Guatemala",
+    "code": "GT",
+    "fifa": "GUA"
+  },
+  {
+    "name": "Guyana",
+    "code": "GY",
+    "fifa": "GUY"
+  },
+  {
+    "name": "Haiti",
+    "code": "HT",
+    "fifa": "HAI"
+  },
+  {
+    "name": "Honduras",
+    "code": "HN",
+    "fifa": "HON"
+  },
+  {
+    "name": "Jamaica",
+    "code": "JM",
+    "fifa": "JAM"
+  },
+  {
+    "name": "Mexico",
+    "code": "MX",
+    "fifa": "MEX"
+  },
+  {
+    "name": "Montserrat",
+    "code": "MS",
+    "fifa": "MSR"
+  },
+  {
+    "name": "Nicaragua",
+    "code": "NI",
+    "fifa": "NCA"
+  },
+  {
+    "name": "Panama",
+    "code": "PA",
+    "fifa": "PAN"
+  },
+  {
+    "name": "Puerto Rico",
+    "code": "PR",
+    "fifa": "PUR"
+  },
+  {
+    "name": "Saint Kitts and Nevis",
+    "code": "KN",
+    "fifa": "SKN"
+  },
+  {
+    "name": "Saint Lucia",
+    "code": "LC",
+    "fifa": "LCA"
+  },
+  {
+    "name": "Saint Vincent and the Grenadines",
+    "code": "VC",
+    "fifa": "VIN"
+  },
+  {
+    "name": "Suriname",
+    "code": "SR",
+    "fifa": "SUR"
+  },
+  {
+    "name": "Trinidad and Tobago",
+    "code": "TT",
+    "fifa": "TRI"
+  },
+  {
+    "name": "Turks and Caicos Islands",
+    "code": "TC",
+    "fifa": "TCA"
+  },
+  {
+    "name": "United States",
+    "code": "US",
+    "fifa": "USA"
+  },
+  {
+    "name": "US Virgin Islands",
+    "code": "VI",
+    "fifa": "VIR"
+  },
+  {
+    "name": "Argentina",
+    "code": "AR",
+    "fifa": "ARG"
+  },
+  {
+    "name": "Bolivia",
+    "code": "BO",
+    "fifa": "BOL"
+  },
+  {
+    "name": "Brazil",
+    "code": "BR",
+    "fifa": "BRA"
+  },
+  {
+    "name": "Chile",
+    "code": "CL",
+    "fifa": "CHI"
+  },
+  {
+    "name": "Colombia",
+    "code": "CO",
+    "fifa": "COL"
+  },
+  {
+    "name": "Ecuador",
+    "code": "EC",
+    "fifa": "ECU"
+  },
+  {
+    "name": "Paraguay",
+    "code": "PY",
+    "fifa": "PAR"
+  },
+  {
+    "name": "Peru",
+    "code": "PE",
+    "fifa": "PER"
+  },
+  {
+    "name": "Uruguay",
+    "code": "UY",
+    "fifa": "URU"
+  },
+  {
+    "name": "Venezuela",
+    "code": "VE",
+    "fifa": "VEN"
+  },
+  {
+    "name": "American Samoa",
+    "code": "AS",
+    "fifa": "ASA"
+  },
+  {
+    "name": "Cook Islands",
+    "code": "CK",
+    "fifa": "COK"
+  },
+  {
+    "name": "Fiji",
+    "code": "FJ",
+    "fifa": "FIJ"
+  },
+  {
+    "name": "New Caledonia",
+    "code": "NC",
+    "fifa": "NCL"
+  },
+  {
+    "name": "New Zealand",
+    "code": "NZ",
+    "fifa": "NZL"
+  },
+  {
+    "name": "Papua New Guinea",
+    "code": "PG",
+    "fifa": "PNG"
+  },
+  {
+    "name": "Samoa",
+    "code": "WS",
+    "fifa": "SAM"
+  },
+  {
+    "name": "Solomon Islands",
+    "code": "SB",
+    "fifa": "SOL"
+  },
+  {
+    "name": "Tahiti",
+    "code": "PF",
+    "fifa": "TAH"
+  },
+  {
+    "name": "Tonga",
+    "code": "TO",
+    "fifa": "TGA"
+  },
+  {
+    "name": "Vanuatu",
+    "code": "VU",
+    "fifa": "VAN"
+  }
+]

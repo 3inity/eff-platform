@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/db";
 import { getAdminSession, checkAdminPermission } from "@/lib/auth-admin";
 import { createAuditLog } from "@/lib/audit";
+import { findBundledTeam, findConflictingParticipant } from "@/lib/teams";
 
 export async function GET(
   req: Request,
@@ -53,7 +54,15 @@ export async function POST(
 
     const { id: competitionId } = await params;
     const body = await req.json();
-    const { playerId, teamId: reqTeamId, teamName, teamLogoUrl, nationality } = body;
+    const { playerId, teamId: reqTeamId, teamName, teamLogoUrl, nationality, force } = body;
+    const isForce = Boolean(force || body.forceAssign || body.adminOverride);
+
+    if (isForce && !checkAdminPermission(session.role, ["SUPER_ADMIN", "MATCH_ADMIN"])) {
+      return NextResponse.json(
+        { error: "Only Super Admin and Match Admin are permitted to force assign taken teams." },
+        { status: 403 }
+      );
+    }
 
     if (!playerId) {
       return NextResponse.json({ error: "Player ID is required." }, { status: 400 });
@@ -84,6 +93,41 @@ export async function POST(
       );
     }
 
+    // Check for team conflicts unless force flag is active
+    let teamId: string | null = reqTeamId || null;
+    let finalTeamName = teamName ? teamName.trim() : null;
+    let finalTeamLogoUrl = teamLogoUrl ? teamLogoUrl.trim() : null;
+
+    const bundled = findBundledTeam(reqTeamId || teamName);
+    if (bundled) {
+      finalTeamName = bundled.name;
+    }
+
+    if (!isForce && (bundled || finalTeamName || teamId)) {
+      const existingParticipants = await prisma.competitionParticipant.findMany({
+        where: { competitionId },
+        include: { player: true, team: true },
+      });
+
+      const candidateIdentifier = bundled ? bundled.id : (finalTeamName || teamId)!;
+      const conflict = findConflictingParticipant(
+        candidateIdentifier,
+        existingParticipants,
+        playerId
+      );
+
+      if (conflict) {
+        return NextResponse.json(
+          {
+            error: `This team is already taken by @${
+              conflict.player?.username || "another competitor"
+            } in this competition`,
+          },
+          { status: 409 }
+        );
+      }
+    }
+
     // Optionally update player nationality if selected
     if (nationality) {
       await prisma.player.update({
@@ -91,10 +135,6 @@ export async function POST(
         data: { nationality: String(nationality).toUpperCase().trim() },
       });
     }
-
-    let teamId: string | null = reqTeamId || null;
-    let finalTeamName = teamName ? teamName.trim() : null;
-    let finalTeamLogoUrl = teamLogoUrl ? teamLogoUrl.trim() : null;
 
     if (teamId) {
       const existingTeam = await prisma.team.findUnique({ where: { id: teamId } });
