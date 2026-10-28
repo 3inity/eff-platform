@@ -86,15 +86,7 @@ export async function POST(
       },
     });
 
-    if (existing) {
-      return NextResponse.json(
-        { error: "Player is already registered in this competition." },
-        { status: 400 }
-      );
-    }
-
     // Check for team conflicts unless force flag is active
-    let teamId: string | null = reqTeamId || null;
     let finalTeamName = teamName ? teamName.trim() : null;
     let finalTeamLogoUrl = teamLogoUrl ? teamLogoUrl.trim() : null;
 
@@ -103,13 +95,13 @@ export async function POST(
       finalTeamName = bundled.name;
     }
 
-    if (!isForce && (bundled || finalTeamName || teamId)) {
+    if (!isForce && (bundled || finalTeamName || reqTeamId)) {
       const existingParticipants = await prisma.competitionParticipant.findMany({
         where: { competitionId },
         include: { player: true, team: true },
       });
 
-      const candidateIdentifier = bundled ? bundled.id : (finalTeamName || teamId)!;
+      const candidateIdentifier = bundled ? bundled.id : (finalTeamName || reqTeamId)!;
       const conflict = findConflictingParticipant(
         candidateIdentifier,
         existingParticipants,
@@ -136,15 +128,18 @@ export async function POST(
       });
     }
 
-    if (teamId) {
-      const existingTeam = await prisma.team.findUnique({ where: { id: teamId } });
-      if (existingTeam) {
-        finalTeamName = existingTeam.name;
-        finalTeamLogoUrl = finalTeamLogoUrl || existingTeam.logoUrl;
-      }
-    } else if (finalTeamName) {
-      // Find or create team by name in this competition
-      let team = await prisma.team.findUnique({
+    // Robust Team resolution:
+    // 1. Check if reqTeamId is an existing Team record in this competition
+    let dbTeam = null;
+    if (reqTeamId) {
+      dbTeam = await prisma.team.findFirst({
+        where: { id: reqTeamId, competitionId },
+      });
+    }
+
+    // 2. If not found by ID (e.g. reqTeamId was a slug or custom ID), look up by name in this competition
+    if (!dbTeam && finalTeamName) {
+      dbTeam = await prisma.team.findUnique({
         where: {
           competitionId_name: {
             competitionId,
@@ -152,30 +147,88 @@ export async function POST(
           },
         },
       });
+    }
 
-      if (!team) {
-        team = await prisma.team.create({
-          data: {
-            competitionId,
-            name: finalTeamName,
-            logoUrl: finalTeamLogoUrl || null,
-          },
-        });
-      } else if (finalTeamLogoUrl && !team.logoUrl) {
-        team = await prisma.team.update({
-          where: { id: team.id },
+    // 3. If team doesn't exist yet in this competition, auto-create it
+    if (!dbTeam && finalTeamName) {
+      dbTeam = await prisma.team.create({
+        data: {
+          competitionId,
+          name: finalTeamName,
+          logoUrl: finalTeamLogoUrl || null,
+        },
+      });
+    } else if (dbTeam) {
+      finalTeamName = dbTeam.name;
+      if (finalTeamLogoUrl && !dbTeam.logoUrl) {
+        dbTeam = await prisma.team.update({
+          where: { id: dbTeam.id },
           data: { logoUrl: finalTeamLogoUrl },
         });
       }
-
-      teamId = team.id;
+      finalTeamLogoUrl = finalTeamLogoUrl || dbTeam.logoUrl;
     }
+
+    const validTeamId: string | null = dbTeam ? dbTeam.id : null;
+
+    // Handle existing participant (withdrawn vs already registered)
+    if (existing) {
+      if (existing.status === "WITHDRAWN") {
+        const reactivated = await prisma.competitionParticipant.update({
+          where: { id: existing.id },
+          data: {
+            status: "APPROVED",
+            teamId: validTeamId,
+            teamName: finalTeamName,
+            teamLogoUrl: finalTeamLogoUrl,
+          },
+          include: {
+            player: true,
+            team: true,
+          },
+        });
+
+        await createAuditLog({
+          adminId: session.adminId,
+          actionType: "LINK_PLAYER_TEAM",
+          targetTable: "CompetitionParticipant",
+          targetId: reactivated.id,
+          newValue: {
+            competition: competition.name,
+            player: reactivated.player.username,
+            teamName: finalTeamName,
+            nationality: nationality || null,
+            note: "Re-enrolled withdrawn player",
+          },
+        });
+
+        revalidatePath(`/competition/${competitionId}`);
+        revalidatePath("/admin/competitions");
+        revalidatePath("/portal/competitions");
+        revalidatePath("/");
+
+        return NextResponse.json({ success: true, participant: reactivated });
+      }
+
+      return NextResponse.json(
+        { error: "Player is already registered in this competition." },
+        { status: 409 }
+      );
+    }
+
+    console.log("Creating CompetitionParticipant with:", {
+      competitionId,
+      playerId,
+      teamId: validTeamId,
+      teamName: finalTeamName,
+      teamLogoUrl: finalTeamLogoUrl,
+    });
 
     const participant = await prisma.competitionParticipant.create({
       data: {
         competitionId,
         playerId,
-        teamId,
+        teamId: validTeamId,
         teamName: finalTeamName,
         teamLogoUrl: finalTeamLogoUrl,
         status: "APPROVED",
@@ -205,10 +258,30 @@ export async function POST(
     revalidatePath("/");
 
     return NextResponse.json({ success: true, participant });
-  } catch (error) {
-    console.error("POST /api/admin/competitions/[id]/participants error:", error);
+  } catch (error: any) {
+    console.error("POST /api/admin/competitions/[id]/participants error details:", {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack,
+    });
+
+    if (error?.code === "P2002") {
+      return NextResponse.json(
+        { error: "Player is already registered in this competition." },
+        { status: 409 }
+      );
+    }
+
+    if (error?.code === "P2003") {
+      return NextResponse.json(
+        { error: `Database reference error: ${error?.meta?.field_name || "Invalid foreign key constraint on team or player."}` },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to link player to competition." },
+      { error: error?.message || "Failed to link player to competition." },
       { status: 500 }
     );
   }

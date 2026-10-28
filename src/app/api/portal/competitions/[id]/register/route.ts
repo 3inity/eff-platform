@@ -87,16 +87,8 @@ export async function POST(
       finalTeamName = bundled.name;
     }
 
-    if (teamId) {
-      const selectedTeam = competition.teams.find((t) => t.id === teamId);
-      if (selectedTeam) {
-        finalTeamName = selectedTeam.name;
-        finalTeamLogoUrl = finalTeamLogoUrl || selectedTeam.logoUrl;
-      }
-    }
-
     // Check if team is taken by another active participant in this competition (using canonical alias-aware check)
-    const candidateIdentifier = bundled ? bundled.id : (finalTeamName || teamId);
+    const candidateIdentifier = bundled ? bundled.id : (finalTeamName || reqTeamId);
     if (candidateIdentifier) {
       const conflict = findConflictingParticipant(
         candidateIdentifier,
@@ -116,9 +108,21 @@ export async function POST(
       }
     }
 
-    // If a new team name was entered without existing teamId, create the Team record
-    if (finalTeamName && !teamId) {
-      let team = await prisma.team.findUnique({
+    // Robust Team resolution:
+    // 1. Check if reqTeamId is an existing Team record in this competition
+    let dbTeam = null;
+    if (reqTeamId) {
+      dbTeam = competition.teams.find((t) => t.id === reqTeamId) || null;
+      if (!dbTeam) {
+        dbTeam = await prisma.team.findFirst({
+          where: { id: reqTeamId, competitionId },
+        });
+      }
+    }
+
+    // 2. If not found by ID (e.g. reqTeamId was a slug or custom ID), look up by name in this competition
+    if (!dbTeam && finalTeamName) {
+      dbTeam = await prisma.team.findUnique({
         where: {
           competitionId_name: {
             competitionId,
@@ -126,18 +130,29 @@ export async function POST(
           },
         },
       });
+    }
 
-      if (!team) {
-        team = await prisma.team.create({
-          data: {
-            competitionId,
-            name: finalTeamName,
-            logoUrl: finalTeamLogoUrl || null,
-          },
+    // 3. If team doesn't exist yet in this competition, auto-create it
+    if (!dbTeam && finalTeamName) {
+      dbTeam = await prisma.team.create({
+        data: {
+          competitionId,
+          name: finalTeamName,
+          logoUrl: finalTeamLogoUrl || null,
+        },
+      });
+    } else if (dbTeam) {
+      finalTeamName = dbTeam.name;
+      if (finalTeamLogoUrl && !dbTeam.logoUrl) {
+        dbTeam = await prisma.team.update({
+          where: { id: dbTeam.id },
+          data: { logoUrl: finalTeamLogoUrl },
         });
       }
-      teamId = team.id;
+      finalTeamLogoUrl = finalTeamLogoUrl || dbTeam.logoUrl;
     }
+
+    const validTeamId: string | null = dbTeam ? dbTeam.id : null;
 
     // 5. Check if already registered
     const existing = competition.participants.find(
@@ -153,7 +168,7 @@ export async function POST(
           where: { id: existing.id },
           data: {
             status,
-            teamId: teamId || existing.teamId,
+            teamId: validTeamId || existing.teamId,
             teamName: finalTeamName || existing.teamName,
             teamLogoUrl: finalTeamLogoUrl || existing.teamLogoUrl,
           },
@@ -184,7 +199,7 @@ export async function POST(
       data: {
         competitionId,
         playerId: session.playerId,
-        teamId,
+        teamId: validTeamId,
         teamName: finalTeamName,
         teamLogoUrl: finalTeamLogoUrl,
         status,
@@ -203,10 +218,30 @@ export async function POST(
         ? "Registration submitted and pending admin review."
         : "Successfully registered for the competition!",
     });
-  } catch (error) {
-    console.error("POST /api/portal/competitions/[id]/register error:", error);
+  } catch (error: any) {
+    console.error("POST /api/portal/competitions/[id]/register error details:", {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack,
+    });
+
+    if (error?.code === "P2002") {
+      return NextResponse.json(
+        { error: "You are already registered in this competition." },
+        { status: 409 }
+      );
+    }
+
+    if (error?.code === "P2003") {
+      return NextResponse.json(
+        { error: `Database reference error: ${error?.meta?.field_name || "Invalid foreign key constraint."}` },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to register for competition." },
+      { error: error?.message || "Failed to register for competition." },
       { status: 500 }
     );
   }
