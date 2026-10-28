@@ -73,6 +73,7 @@ interface PlayerOption {
   username: string;
   teamName: string;
   avatarUrl: string | null;
+  nationality?: string | null;
 }
 
 export default function AdminCompetitionsPage() {
