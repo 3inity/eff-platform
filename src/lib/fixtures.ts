@@ -317,8 +317,8 @@ export function generateKnockoutBracket(
       isCompleted: false,
     });
 
-    // Leg 2 (if two-leg tie)
-    if (knockoutLegs === 2) {
+    // Leg 2 (if two-leg tie AND not the Final)
+    if (knockoutLegs === 2 && round1Stage !== "FINAL") {
       const matchTime2 = new Date(
         round1StartMs + (matchdayDurationHours / 2) * 3600 * 1000 + i * 2 * 3600 * 1000
       );
@@ -366,8 +366,8 @@ export function generateKnockoutBracket(
         isCompleted: false,
       });
 
-      // Leg 2 placeholder
-      if (knockoutLegs === 2) {
+      // Leg 2 placeholder (all rounds EXCEPT the FINAL)
+      if (knockoutLegs === 2 && stage !== "FINAL") {
         const matchTime2 = new Date(
           roundStartMs + (matchdayDurationHours / 2) * 3600 * 1000 + i * 2 * 3600 * 1000
         );
@@ -399,12 +399,19 @@ export function generateKnockoutBracket(
       if (targetSlot) {
         const targetMatches = matches.filter((tm) => tm.bracketSlot === targetSlot);
         for (const tm of targetMatches) {
-          if (position === "home") {
+          const isLeg2 = tm.legNumber === 2;
+          const assignAsHome = isLeg2 ? position === "away" : position === "home";
+          if (assignAsHome) {
             tm.homePlayerId = m.homePlayerId;
           } else {
             tm.awayPlayerId = m.homePlayerId;
           }
         }
+      }
+      // Also complete leg 2 bye if applicable
+      const leg2Match = matches.find((l2) => l2.bracketSlot === m.bracketSlot && l2.legNumber === 2);
+      if (leg2Match) {
+        leg2Match.isCompleted = true;
       }
     }
   }
@@ -517,6 +524,7 @@ export function resolveTieWinner(
   const leg1 = matchesInSlot.find((m) => m.legNumber === 1);
   const leg2 = matchesInSlot.find((m) => m.legNumber === 2);
 
+  // Both legs must be present and completed with scores
   if (
     !leg1 ||
     !leg2 ||
@@ -528,24 +536,41 @@ export function resolveTieWinner(
     return { winnerPlayerId: null, isDecided: false, requiresShootout: false };
   }
 
-  // In leg 1: Team A is home, Team B is away
-  // In leg 2: Team B is home, Team A is away
-  const teamA = leg1.homePlayerId;
-  const teamB = leg1.awayPlayerId;
+  // Determine the two competing player IDs
+  const teamA = leg1.homePlayerId || leg2.awayPlayerId;
+  const teamB = leg1.awayPlayerId || leg2.homePlayerId;
 
-  const scoreA = leg1.homeScore + leg2.awayScore;
-  const scoreB = leg1.awayScore + leg2.homeScore;
+  if (!teamA || !teamB) {
+    return { winnerPlayerId: null, isDecided: false, requiresShootout: false };
+  }
 
-  if (scoreA > scoreB) {
+  // Goals for Team A and Team B in Leg 1
+  const goalsA_leg1 = leg1.homePlayerId === teamA ? leg1.homeScore : (leg1.awayPlayerId === teamA ? leg1.awayScore : 0);
+  const goalsB_leg1 = leg1.homePlayerId === teamB ? leg1.homeScore : (leg1.awayPlayerId === teamB ? leg1.awayScore : 0);
+
+  // Goals for Team A and Team B in Leg 2
+  const goalsA_leg2 = leg2.homePlayerId === teamA ? leg2.homeScore : (leg2.awayPlayerId === teamA ? leg2.awayScore : 0);
+  const goalsB_leg2 = leg2.homePlayerId === teamB ? leg2.homeScore : (leg2.awayPlayerId === teamB ? leg2.awayScore : 0);
+
+  // Total aggregate score
+  const totalScoreA = (goalsA_leg1 ?? 0) + (goalsA_leg2 ?? 0);
+  const totalScoreB = (goalsB_leg1 ?? 0) + (goalsB_leg2 ?? 0);
+
+  if (totalScoreA > totalScoreB) {
     return { winnerPlayerId: teamA, isDecided: true, requiresShootout: false };
   }
-  if (scoreB > scoreA) {
+  if (totalScoreB > totalScoreA) {
     return { winnerPlayerId: teamB, isDecided: true, requiresShootout: false };
   }
 
-  // Away goals rule
-  const awayGoalsA = leg2.awayScore;
-  const awayGoalsB = leg1.awayScore;
+  // Tied on aggregate -> Away goals rule
+  const awayGoalsA =
+    (leg1.awayPlayerId === teamA ? (leg1.awayScore ?? 0) : 0) +
+    (leg2.awayPlayerId === teamA ? (leg2.awayScore ?? 0) : 0);
+
+  const awayGoalsB =
+    (leg1.awayPlayerId === teamB ? (leg1.awayScore ?? 0) : 0) +
+    (leg2.awayPlayerId === teamB ? (leg2.awayScore ?? 0) : 0);
 
   if (awayGoalsA > awayGoalsB) {
     return { winnerPlayerId: teamA, isDecided: true, requiresShootout: false };
@@ -554,17 +579,24 @@ export function resolveTieWinner(
     return { winnerPlayerId: teamB, isDecided: true, requiresShootout: false };
   }
 
-  // Aggregate and away goals tied -> shootout in Leg 2
-  const penHome = leg2.homePenalty;
-  const penAway = leg2.awayPenalty;
+  // Aggregate and away goals tied -> Penalty shootout
+  // Check penalties in Leg 2 (or Leg 1 if entered there)
+  const penMatch =
+    leg2.homePenalty !== null && leg2.awayPenalty !== null
+      ? leg2
+      : leg1.homePenalty !== null && leg1.awayPenalty !== null
+      ? leg1
+      : null;
 
-  if (penHome !== null && penAway !== null) {
-    // In leg 2: home is Team B, away is Team A
-    if (penHome > penAway) {
-      return { winnerPlayerId: teamB, isDecided: true, requiresShootout: false };
-    }
-    if (penAway > penHome) {
+  if (penMatch && penMatch.homePenalty !== null && penMatch.awayPenalty !== null) {
+    const penA = penMatch.homePlayerId === teamA ? penMatch.homePenalty : penMatch.awayPenalty;
+    const penB = penMatch.homePlayerId === teamB ? penMatch.homePenalty : penMatch.awayPenalty;
+
+    if (penA > penB) {
       return { winnerPlayerId: teamA, isDecided: true, requiresShootout: false };
+    }
+    if (penB > penA) {
+      return { winnerPlayerId: teamB, isDecided: true, requiresShootout: false };
     }
   }
 

@@ -196,10 +196,13 @@ export async function POST(req: Request) {
               });
 
               for (const tm of targetMatches) {
+                const isLeg2 = tm.legNumber === 2;
+                const assignAsHome = isLeg2 ? position === "away" : position === "home";
+
                 await tx.match.update({
                   where: { id: tm.id },
                   data: {
-                    ...(position === "home"
+                    ...(assignAsHome
                       ? { homePlayerId: resolution.winnerPlayerId }
                       : { awayPlayerId: resolution.winnerPlayerId }),
                   },

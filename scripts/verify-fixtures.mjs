@@ -227,122 +227,170 @@ console.log("--- Test d: Knockout single-leg (8 participants) ---");
 }
 
 // ============================================================================
-// Scenario e: Knockout two-leg (8 participants, legs=2)
+// Scenario e: Knockout two-leg (8 and 4 participants, legs=2, Final single-leg)
 // ============================================================================
-console.log("--- Test e: Knockout two-leg (8 participants, legs=2) ---");
+console.log("--- Test e: Knockout two-leg (Final always single-leg & aggregate advancement) ---");
 {
-  const participants = ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8"];
-  const knockout = generateKnockoutBracket({
-    competitionId: "comp-ko-two-leg",
-    participantIds: participants,
+  const participants8 = ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8"];
+  const knockout8 = generateKnockoutBracket({
+    competitionId: "comp-ko-two-leg-8",
+    participantIds: participants8,
     startDate,
     matchdayDurationHours: 48,
     knockoutLegs: 2,
   });
 
-  console.log(`Total knockout matches generated: ${knockout.length}`);
-  assert.strictEqual(knockout.length, 14, "Expected 14 matches (7 ties x 2 legs)");
+  console.log(`Total knockout matches for 8 teams: ${knockout8.length}`);
+  // 4 QF ties * 2 legs (8) + 2 SF ties * 2 legs (4) + 1 Final tie * 1 leg (1) = 13 matches
+  assert.strictEqual(knockout8.length, 13, "Expected 13 matches (4 QF*2 + 2 SF*2 + 1 Final*1)");
 
-  // Test aggregate + away goals
-  // Tie 1: Leg 1: P1 home vs P8 away = 2-1
-  //        Leg 2: P8 home vs P1 away = 1-1
-  // Aggregate: P1 = 3, P8 = 2 -> Winner: P1
-  const tieA = [
-    {
-      id: "m1",
-      homePlayerId: "P1",
-      awayPlayerId: "P8",
-      homeScore: 2,
-      awayScore: 1,
-      homePenalty: null,
-      awayPenalty: null,
-      legNumber: 1,
-      bracketSlot: 1,
-      isCompleted: true,
-    },
-    {
-      id: "m2",
-      homePlayerId: "P8",
-      awayPlayerId: "P1",
-      homeScore: 1,
-      awayScore: 1,
-      homePenalty: null,
-      awayPenalty: null,
-      legNumber: 2,
-      bracketSlot: 1,
-      isCompleted: true,
-    },
-  ];
-  const resA = resolveTieWinner(tieA);
-  assert.strictEqual(resA.winnerPlayerId, "P1", "P1 should win on aggregate (3-2)");
+  const finals8 = knockout8.filter((m) => m.stage === "FINAL");
+  assert.strictEqual(finals8.length, 1, "Final must always be single-leg (1 match)");
+  assert.strictEqual(finals8[0].legNumber, 1, "Final legNumber must be 1");
 
-  // Away goals test:
-  // Leg 1: P2 (home) 1 - 2 P3 (away)
-  // Leg 2: P3 (home) 0 - 1 P2 (away)
-  // Aggregate: 2 - 2. Away goals: P3 scored 2 away, P2 scored 1 away -> Winner: P3
-  const tieB = [
+  // --------------------------------------------------------------------------
+  // Dedicated 4-participant two-leg test scenario
+  // --------------------------------------------------------------------------
+  console.log("  Testing 4 participants with two-leg semifinals and single-leg final...");
+  const participants4 = ["TeamA", "TeamB", "TeamC", "TeamD"];
+  const knockout4 = generateKnockoutBracket({
+    competitionId: "comp-ko-two-leg-4",
+    participantIds: participants4,
+    startDate,
+    matchdayDurationHours: 48,
+    knockoutLegs: 2,
+  });
+
+  // 2 SF ties * 2 legs = 4 matches, 1 Final * 1 leg = 1 match. Total = 5 matches.
+  assert.strictEqual(knockout4.length, 5, "Expected 5 matches for 4 teams (2 SF*2 + 1 Final*1)");
+
+  const sfMatches = knockout4.filter((m) => m.stage === "SEMIFINAL");
+  const finalMatches = knockout4.filter((m) => m.stage === "FINAL");
+
+  assert.strictEqual(sfMatches.length, 4, "Expected 4 semifinal matches (2 legs each)");
+  assert.strictEqual(finalMatches.length, 1, "Expected 1 final match (single-leg)");
+
+  // Enter scores:
+  // Semifinal 1 (bracketSlot 1): TeamA vs TeamD
+  // Leg 1: TeamA (home) 1 - 0 TeamD (away)
+  // Leg 2: TeamD (home) 0 - 3 TeamA (away)  -> Aggregate: TeamA 4 - 0 TeamD
+  const sf1Leg1 = sfMatches.find((m) => m.bracketSlot === 1 && m.legNumber === 1);
+  const sf1Leg2 = sfMatches.find((m) => m.bracketSlot === 1 && m.legNumber === 2);
+  assert.ok(sf1Leg1 && sf1Leg2, "Expected SF1 leg 1 and leg 2");
+
+  sf1Leg1.homeScore = 1;
+  sf1Leg1.awayScore = 0;
+  sf1Leg1.isCompleted = true;
+
+  sf1Leg2.homeScore = 0;
+  sf1Leg2.awayScore = 3;
+  sf1Leg2.isCompleted = true;
+
+  const resSF1 = resolveTieWinner([sf1Leg1, sf1Leg2]);
+  assert.strictEqual(resSF1.winnerPlayerId, "TeamA", "TeamA should win SF1 on aggregate (4-0)");
+
+  // Semifinal 2 (bracketSlot 2): TeamB vs TeamC
+  // Leg 1: TeamB (home) 2 - 0 TeamC (away)
+  // Leg 2: TeamC (home) 5 - 6 TeamB (away)  -> Aggregate: TeamB 8 - 5 TeamC
+  const sf2Leg1 = sfMatches.find((m) => m.bracketSlot === 2 && m.legNumber === 1);
+  const sf2Leg2 = sfMatches.find((m) => m.bracketSlot === 2 && m.legNumber === 2);
+  assert.ok(sf2Leg1 && sf2Leg2, "Expected SF2 leg 1 and leg 2");
+
+  sf2Leg1.homeScore = 2;
+  sf2Leg1.awayScore = 0;
+  sf2Leg1.isCompleted = true;
+
+  sf2Leg2.homeScore = 5;
+  sf2Leg2.awayScore = 6;
+  sf2Leg2.isCompleted = true;
+
+  const resSF2 = resolveTieWinner([sf2Leg1, sf2Leg2]);
+  assert.strictEqual(resSF2.winnerPlayerId, "TeamB", "TeamB should win SF2 on aggregate (8-5)");
+
+  // Advance winners to the Final (bracketSlot 3)
+  const finalSlot = finalMatches[0];
+  const next1 = getNextBracketSlot(1, 4);
+  const next2 = getNextBracketSlot(2, 4);
+
+  assert.strictEqual(next1.targetSlot, 3);
+  assert.strictEqual(next1.position, "home");
+  assert.strictEqual(next2.targetSlot, 3);
+  assert.strictEqual(next2.position, "away");
+
+  finalSlot.homePlayerId = resSF1.winnerPlayerId;
+  finalSlot.awayPlayerId = resSF2.winnerPlayerId;
+
+  assert.strictEqual(finalSlot.homePlayerId, "TeamA", "Final homePlayerId must be TeamA");
+  assert.strictEqual(finalSlot.awayPlayerId, "TeamB", "Final awayPlayerId must be TeamB");
+
+  // --------------------------------------------------------------------------
+  // Away goals & Penalties verification
+  // --------------------------------------------------------------------------
+  // Tie: TeamX 1 - 2 TeamY (Leg 1), TeamY 0 - 1 TeamX (Leg 2)
+  // Aggregate: 2-2. Away goals: TeamY scored 2 away, TeamX scored 1 away -> Winner: TeamY
+  const tieAwayGoals = [
     {
-      id: "m3",
-      homePlayerId: "P2",
-      awayPlayerId: "P3",
+      id: "m_ag_1",
+      homePlayerId: "TeamX",
+      awayPlayerId: "TeamY",
       homeScore: 1,
       awayScore: 2,
       homePenalty: null,
       awayPenalty: null,
       legNumber: 1,
-      bracketSlot: 2,
+      bracketSlot: 10,
       isCompleted: true,
     },
     {
-      id: "m4",
-      homePlayerId: "P3",
-      awayPlayerId: "P2",
+      id: "m_ag_2",
+      homePlayerId: "TeamY",
+      awayPlayerId: "TeamX",
       homeScore: 0,
       awayScore: 1,
       homePenalty: null,
       awayPenalty: null,
       legNumber: 2,
-      bracketSlot: 2,
+      bracketSlot: 10,
       isCompleted: true,
     },
   ];
-  const resB = resolveTieWinner(tieB);
-  assert.strictEqual(resB.winnerPlayerId, "P3", "P3 should win on away goals rule");
+  const resAG = resolveTieWinner(tieAwayGoals);
+  assert.strictEqual(resAG.winnerPlayerId, "TeamY", "TeamY should win on away goals rule");
 
   // Penalty shootout test (Aggregate and away goals tied):
-  // Leg 1: P4 (home) 1 - 0 P5 (away)
-  // Leg 2: P5 (home) 1 - 0 P4 (away)
-  // Penalty shootout in Leg 2: P5 = 4, P4 = 5 -> Winner: P4
-  const tieC = [
+  // Leg 1: TeamX (home) 1 - 0 TeamY (away)
+  // Leg 2: TeamY (home) 1 - 0 TeamX (away)
+  // Penalties in Leg 2: TeamY (home) 4 - 5 TeamX (away) -> Winner: TeamX
+  const tiePenalties = [
     {
-      id: "m5",
-      homePlayerId: "P4",
-      awayPlayerId: "P5",
+      id: "m_pen_1",
+      homePlayerId: "TeamX",
+      awayPlayerId: "TeamY",
       homeScore: 1,
       awayScore: 0,
       homePenalty: null,
       awayPenalty: null,
       legNumber: 1,
-      bracketSlot: 3,
+      bracketSlot: 11,
       isCompleted: true,
     },
     {
-      id: "m6",
-      homePlayerId: "P5",
-      awayPlayerId: "P4",
+      id: "m_pen_2",
+      homePlayerId: "TeamY",
+      awayPlayerId: "TeamX",
       homeScore: 1,
       awayScore: 0,
       homePenalty: 4,
       awayPenalty: 5,
       legNumber: 2,
-      bracketSlot: 3,
+      bracketSlot: 11,
       isCompleted: true,
     },
   ];
-  const resC = resolveTieWinner(tieC);
-  assert.strictEqual(resC.winnerPlayerId, "P4", "P4 should win on penalty shootout");
+  const resPen = resolveTieWinner(tiePenalties);
+  assert.strictEqual(resPen.winnerPlayerId, "TeamX", "TeamX should win on penalties");
 
-  console.log("✓ PASS: Knockout two-leg: 14 matches, aggregate, away goals, and penalties work correctly.\n");
+  console.log("✓ PASS: Knockout two-leg: Final is single-leg, aggregate scores correctly mapped, only aggregate winners advance to Final.\n");
 }
 
 // ============================================================================
