@@ -16,6 +16,7 @@ import {
   ArrowDownCircle,
   Shield,
   HelpCircle,
+  Trophy,
 } from "lucide-react";
 
 interface BetSelection {
@@ -29,9 +30,10 @@ interface BetSelection {
 
 interface MatchCandidate {
   id: string;
+  competitionId?: string;
   competitionName: string;
-  homePlayer: { id: string; name: string; username: string };
-  awayPlayer: { id: string; name: string; username: string };
+  homePlayer: { id: string; name: string; username: string; logoUrl?: string };
+  awayPlayer: { id: string; name: string; username: string; logoUrl?: string };
   homeOdds: number;
   drawOdds: number;
   awayOdds: number;
@@ -76,17 +78,17 @@ export default function PortalBetsPage() {
 
   const loadData = async () => {
     try {
-      const [meRes, betRes, withRes, compRes] = await Promise.all([
+      const [meRes, betRes, withRes, matchesRes] = await Promise.all([
         fetch("/api/auth/player/me"),
         fetch("/api/portal/bets"),
         fetch("/api/portal/withdrawals"),
-        fetch("/api/competitions"),
+        fetch("/api/portal/bets/matches"),
       ]);
 
       const meData = await meRes.json();
       const betData = await betRes.json();
       const withData = await withRes.json();
-      const compData = await compRes.json();
+      const matchesData = await matchesRes.json();
 
       if (meData.player) {
         setBalance(meData.player.coins);
@@ -94,83 +96,7 @@ export default function PortalBetsPage() {
       setBets(betData.bets || []);
       setWithdrawals(withData.withdrawals || []);
 
-      // Extract matches from competitions
-      const candidates: MatchCandidate[] = [];
-      const comps = compData.competitions || [];
-
-      comps.forEach((c: any) => {
-        (c.matches || []).forEach((m: any) => {
-          candidates.push({
-            id: m.id,
-            competitionName: c.name,
-            homePlayer: {
-              id: m.homePlayer?.id || "h",
-              name: m.homePlayer?.teamName || "Home Team",
-              username: m.homePlayer?.username || "home",
-            },
-            awayPlayer: {
-              id: m.awayPlayer?.id || "a",
-              name: m.awayPlayer?.teamName || "Away Team",
-              username: m.awayPlayer?.username || "away",
-            },
-            homeOdds: 1.85,
-            drawOdds: 3.2,
-            awayOdds: 2.1,
-          });
-        });
-      });
-
-      // If no competition matches exist yet, provide standard federation fixture options
-      if (candidates.length === 0) {
-        candidates.push(
-          {
-            id: "match-demo-1",
-            competitionName: "EFF Premier League",
-            homePlayer: { id: "p1", name: "Apex Warriors", username: "apex" },
-            awayPlayer: { id: "p2", name: "Lagos Titans", username: "lagos" },
-            homeOdds: 1.75,
-            drawOdds: 3.4,
-            awayOdds: 2.25,
-          },
-          {
-            id: "match-demo-2",
-            competitionName: "EFF Premier League",
-            homePlayer: { id: "p3", name: "Naija Strikers", username: "striker" },
-            awayPlayer: { id: "p4", name: "Sahara Phoenix", username: "phoenix" },
-            homeOdds: 2.05,
-            drawOdds: 3.1,
-            awayOdds: 1.95,
-          },
-          {
-            id: "match-demo-3",
-            competitionName: "Federation Super Cup",
-            homePlayer: { id: "p5", name: "Atlas Lions", username: "atlas" },
-            awayPlayer: { id: "p6", name: "Kigali Royals", username: "kigali" },
-            homeOdds: 1.6,
-            drawOdds: 3.6,
-            awayOdds: 2.8,
-          },
-          {
-            id: "match-demo-4",
-            competitionName: "Federation Super Cup",
-            homePlayer: { id: "p7", name: "Accra Dynamos", username: "accra" },
-            awayPlayer: { id: "p8", name: "Cairo Pharaohs", username: "cairo" },
-            homeOdds: 2.2,
-            drawOdds: 3.05,
-            awayOdds: 1.85,
-          },
-          {
-            id: "match-demo-5",
-            competitionName: "EFF Champions Cup",
-            homePlayer: { id: "p9", name: "Dakar Eagles", username: "dakar" },
-            awayPlayer: { id: "p10", name: "Jozi Stars", username: "jozi" },
-            homeOdds: 1.9,
-            drawOdds: 3.25,
-            awayOdds: 2.1,
-          }
-        );
-      }
-
+      const candidates: MatchCandidate[] = matchesData.matches || betData.matches || [];
       setMatches(candidates);
     } catch (err) {
       console.error(err);
@@ -408,79 +334,129 @@ export default function PortalBetsPage() {
             </span>
           </div>
 
-          <div className="space-y-3">
-            {matches.map((m) => {
-              const currentPick = selectedPicks.find((p) => p.matchId === m.id);
-
-              return (
-                <div
-                  key={m.id}
-                  className="bg-white text-slate-900 border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-3 hover:border-[#00b4ff]/60 transition"
-                >
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 border-b border-slate-100 pb-2">
-                    <span className="font-bold text-blue-900 uppercase tracking-wider">
-                      {m.competitionName}
+          {/* Matches Board Grouped by Competition */}
+          {matches.length === 0 ? (
+            <div className="bg-white text-slate-800 border border-slate-200/80 rounded-2xl p-8 text-center text-xs shadow-sm">
+              <Scale className="w-8 h-8 text-blue-400 mx-auto mb-2 opacity-60" />
+              <p className="font-bold text-slate-700">No active match markets available.</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Acca markets open automatically when competitions are IN PROGRESS and fixtures are scheduled.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(
+                matches.reduce((acc, m) => {
+                  const compName = m.competitionName || "Active Tournament";
+                  if (!acc[compName]) acc[compName] = [];
+                  acc[compName].push(m);
+                  return acc;
+                }, {} as Record<string, MatchCandidate[]>)
+              ).map(([compName, compMatches]) => (
+                <div key={compName} className="space-y-3">
+                  <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-[#0a1128] to-[#101c4e] rounded-xl border border-blue-800/60 text-white shadow-xs">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="w-4 h-4 text-[#e5b53e]" />
+                      <span className="font-black text-xs uppercase tracking-wider text-white">
+                        {compName}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-blue-300 font-mono">
+                      {compMatches.length} {compMatches.length === 1 ? "fixture" : "fixtures"}
                     </span>
-                    <span className="text-slate-400 font-mono">Full-Time Result (1X2)</span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                    {/* Teams */}
-                    <div className="sm:col-span-6 flex items-center justify-between sm:justify-start gap-4">
-                      <div>
-                        <p className="text-xs font-black text-[#0f172a]">{m.homePlayer.name}</p>
-                        <p className="text-[10px] text-slate-400 font-mono">@{m.homePlayer.username}</p>
-                      </div>
-                      <span className="text-xs font-bold text-slate-400">VS</span>
-                      <div className="text-right sm:text-left">
-                        <p className="text-xs font-black text-[#0f172a]">{m.awayPlayer.name}</p>
-                        <p className="text-[10px] text-slate-400 font-mono">@{m.awayPlayer.username}</p>
-                      </div>
-                    </div>
+                  <div className="space-y-3">
+                    {compMatches.map((m) => {
+                      const currentPick = selectedPicks.find((p) => p.matchId === m.id);
 
-                    {/* Odds 1X2 Buttons */}
-                    <div className="sm:col-span-6 grid grid-cols-3 gap-2">
-                      <button
-                        onClick={() => handleSelectPick(m, "HOME", m.homeOdds)}
-                        className={`p-2 rounded-xl text-center border text-xs font-mono font-bold transition ${
-                          currentPick?.pick === "HOME"
-                            ? "bg-[#00b4ff] text-[#0a1128] border-[#00b4ff] shadow-sm font-black"
-                            : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-blue-50"
-                        }`}
-                      >
-                        <span className="block text-[10px] uppercase font-sans text-slate-400">1</span>
-                        {m.homeOdds.toFixed(2)}
-                      </button>
+                      return (
+                        <div
+                          key={m.id}
+                          className="bg-white text-slate-900 border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-3 hover:border-[#00b4ff]/60 transition"
+                        >
+                          <div className="flex items-center justify-between text-[11px] text-slate-500 border-b border-slate-100 pb-2">
+                            <span className="font-bold text-blue-900 uppercase tracking-wider">
+                              {m.competitionName}
+                            </span>
+                            <span className="text-slate-400 font-mono">Full-Time Result (1X2)</span>
+                          </div>
 
-                      <button
-                        onClick={() => handleSelectPick(m, "DRAW", m.drawOdds)}
-                        className={`p-2 rounded-xl text-center border text-xs font-mono font-bold transition ${
-                          currentPick?.pick === "DRAW"
-                            ? "bg-[#00b4ff] text-[#0a1128] border-[#00b4ff] shadow-sm font-black"
-                            : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-blue-50"
-                        }`}
-                      >
-                        <span className="block text-[10px] uppercase font-sans text-slate-400">X</span>
-                        {m.drawOdds.toFixed(2)}
-                      </button>
+                          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                            {/* Teams */}
+                            <div className="sm:col-span-6 flex items-center justify-between sm:justify-start gap-4">
+                              <div className="flex items-center gap-2.5">
+                                {m.homePlayer.logoUrl && (
+                                  <div className="w-7 h-7 rounded-full bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0 p-0.5">
+                                    <img src={m.homePlayer.logoUrl} alt={m.homePlayer.name} className="w-full h-full object-contain" />
+                                  </div>
+                                )}
+                                <div>
+                                  <p className="text-xs font-black text-[#0f172a]">{m.homePlayer.name}</p>
+                                  <p className="text-[10px] text-slate-400 font-mono">@{m.homePlayer.username}</p>
+                                </div>
+                              </div>
+                              <span className="text-xs font-bold text-slate-400">VS</span>
+                              <div className="flex items-center justify-end sm:justify-start gap-2.5 text-right sm:text-left">
+                                <div>
+                                  <p className="text-xs font-black text-[#0f172a]">{m.awayPlayer.name}</p>
+                                  <p className="text-[10px] text-slate-400 font-mono">@{m.awayPlayer.username}</p>
+                                </div>
+                                {m.awayPlayer.logoUrl && (
+                                  <div className="w-7 h-7 rounded-full bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0 p-0.5">
+                                    <img src={m.awayPlayer.logoUrl} alt={m.awayPlayer.name} className="w-full h-full object-contain" />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
 
-                      <button
-                        onClick={() => handleSelectPick(m, "AWAY", m.awayOdds)}
-                        className={`p-2 rounded-xl text-center border text-xs font-mono font-bold transition ${
-                          currentPick?.pick === "AWAY"
-                            ? "bg-[#00b4ff] text-[#0a1128] border-[#00b4ff] shadow-sm font-black"
-                            : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-blue-50"
-                        }`}
-                      >
-                        <span className="block text-[10px] uppercase font-sans text-slate-400">2</span>
-                        {m.awayOdds.toFixed(2)}
-                      </button>
-                    </div>
+                            {/* Odds 1X2 Buttons */}
+                            <div className="sm:col-span-6 grid grid-cols-3 gap-2">
+                              <button
+                                onClick={() => handleSelectPick(m, "HOME", m.homeOdds)}
+                                className={`p-2 rounded-xl text-center border text-xs font-mono font-bold transition ${
+                                  currentPick?.pick === "HOME"
+                                    ? "bg-[#00b4ff] text-[#0a1128] border-[#00b4ff] shadow-sm font-black"
+                                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-blue-50"
+                                }`}
+                              >
+                                <span className="block text-[10px] uppercase font-sans text-slate-400">1</span>
+                                {m.homeOdds.toFixed(2)}
+                              </button>
+
+                              <button
+                                onClick={() => handleSelectPick(m, "DRAW", m.drawOdds)}
+                                className={`p-2 rounded-xl text-center border text-xs font-mono font-bold transition ${
+                                  currentPick?.pick === "DRAW"
+                                    ? "bg-[#00b4ff] text-[#0a1128] border-[#00b4ff] shadow-sm font-black"
+                                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-blue-50"
+                                }`}
+                              >
+                                <span className="block text-[10px] uppercase font-sans text-slate-400">X</span>
+                                {m.drawOdds.toFixed(2)}
+                              </button>
+
+                              <button
+                                onClick={() => handleSelectPick(m, "AWAY", m.awayOdds)}
+                                className={`p-2 rounded-xl text-center border text-xs font-mono font-bold transition ${
+                                  currentPick?.pick === "AWAY"
+                                    ? "bg-[#00b4ff] text-[#0a1128] border-[#00b4ff] shadow-sm font-black"
+                                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-blue-50"
+                                }`}
+                              >
+                                <span className="block text-[10px] uppercase font-sans text-slate-400">2</span>
+                                {m.awayOdds.toFixed(2)}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right Column: Accumulator Slip Card (4 cols) */}

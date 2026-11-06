@@ -29,6 +29,17 @@ export async function GET(req: Request) {
             },
           },
         },
+        matches: {
+          where: { isCompleted: false },
+          include: {
+            homePlayer: true,
+            awayPlayer: true,
+          },
+          orderBy: [
+            { scheduledAt: "asc" },
+            { matchday: "asc" },
+          ],
+        },
         _count: {
           select: {
             participants: {
@@ -40,11 +51,48 @@ export async function GET(req: Request) {
       },
     });
 
-    const formatted = competitions.map((comp) => ({
-      ...comp,
-      registeredCount: comp._count.participants,
-      matchCount: comp._count.matches,
-    }));
+    const formatted = competitions.map((comp) => {
+      const participantMap = new Map(comp.participants.map((p) => [p.playerId, p]));
+      const formattedMatches = comp.matches.map((m) => {
+        const homePart = m.homePlayerId ? participantMap.get(m.homePlayerId) : null;
+        const awayPart = m.awayPlayerId ? participantMap.get(m.awayPlayerId) : null;
+        const homeTeamName = homePart?.team?.name || homePart?.teamName || m.homePlayer?.teamName || "Home Team";
+        const awayTeamName = awayPart?.team?.name || awayPart?.teamName || m.awayPlayer?.teamName || "Away Team";
+        const homeTeamLogoUrl = homePart?.team?.logoUrl || homePart?.teamLogoUrl || m.homePlayer?.avatarUrl || "/branding/default-crest.svg";
+        const awayTeamLogoUrl = awayPart?.team?.logoUrl || awayPart?.teamLogoUrl || m.awayPlayer?.avatarUrl || "/branding/default-crest.svg";
+
+        return {
+          ...m,
+          homeTeamName,
+          awayTeamName,
+          homeTeamLogoUrl,
+          awayTeamLogoUrl,
+          homePlayer: m.homePlayer
+            ? {
+                ...m.homePlayer,
+                name: homeTeamName,
+                teamName: homeTeamName,
+                clubLogoUrl: homeTeamLogoUrl,
+              }
+            : null,
+          awayPlayer: m.awayPlayer
+            ? {
+                ...m.awayPlayer,
+                name: awayTeamName,
+                teamName: awayTeamName,
+                clubLogoUrl: awayTeamLogoUrl,
+              }
+            : null,
+        };
+      });
+
+      return {
+        ...comp,
+        matches: formattedMatches,
+        registeredCount: comp._count.participants,
+        matchCount: comp._count.matches,
+      };
+    });
 
     return NextResponse.json({ competitions: formatted });
   } catch (error) {

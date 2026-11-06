@@ -19,6 +19,10 @@ export interface MatchFixture {
   bracketSlot?: number | null;
   legNumber?: number | null;
   isCompleted?: boolean;
+  homeTeamName?: string | null;
+  awayTeamName?: string | null;
+  homeTeamLogoUrl?: string | null;
+  awayTeamLogoUrl?: string | null;
   homePlayer?: {
     id: string;
     username: string;
@@ -111,10 +115,10 @@ export function CompetitionFixtures({
   const renderMatchCard = (m: MatchFixture) => {
     const homeName = m.homePlayer?.username ? `@${m.homePlayer.username}` : "TBD";
     const awayName = m.awayPlayer?.username ? `@${m.awayPlayer.username}` : "TBD";
-    const homeTeam = m.homePlayer?.teamName || "Club TBD";
-    const awayTeam = m.awayPlayer?.teamName || "Club TBD";
-    const homeCrest = m.homePlayer?.clubLogoUrl || m.homePlayer?.avatarUrl || "/branding/default-crest.svg";
-    const awayCrest = m.awayPlayer?.clubLogoUrl || m.awayPlayer?.avatarUrl || "/branding/default-crest.svg";
+    const homeTeam = m.homeTeamName || m.homePlayer?.teamName || "Club TBD";
+    const awayTeam = m.awayTeamName || m.awayPlayer?.teamName || "Club TBD";
+    const homeCrest = m.homeTeamLogoUrl || m.homePlayer?.clubLogoUrl || m.homePlayer?.avatarUrl || "/branding/default-crest.svg";
+    const awayCrest = m.awayTeamLogoUrl || m.awayPlayer?.clubLogoUrl || m.awayPlayer?.avatarUrl || "/branding/default-crest.svg";
     const isPlayed = Boolean(m.isCompleted && m.homeScore !== null && m.awayScore !== null);
 
     const kickoffFormatted = m.scheduledAt
@@ -235,8 +239,8 @@ export function CompetitionFixtures({
                 setSelectedMatch({
                   homeId: m.homePlayer!.id,
                   awayId: m.awayPlayer!.id,
-                  homeName: m.homePlayer!.teamName,
-                  awayName: m.awayPlayer!.teamName,
+                  homeName: homeTeam,
+                  awayName: awayTeam,
                 })
               }
               className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-800 hover:text-white bg-blue-50 hover:bg-[#00b4ff] border border-blue-200 px-2.5 py-1 rounded-md transition shadow-xs"

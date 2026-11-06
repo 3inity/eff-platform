@@ -19,6 +19,10 @@ export interface PortalMatchFixture {
   stage?: string | null;
   legNumber?: number | null;
   isCompleted?: boolean;
+  homeTeamName?: string | null;
+  awayTeamName?: string | null;
+  homeTeamLogoUrl?: string | null;
+  awayTeamLogoUrl?: string | null;
   competition?: {
     id: string;
     name: string;
@@ -31,6 +35,7 @@ export interface PortalMatchFixture {
     id: string;
     username: string;
     teamName: string;
+    clubLogoUrl?: string | null;
     avatarUrl?: string | null;
     nationality?: string | null;
   } | null;
@@ -38,6 +43,7 @@ export interface PortalMatchFixture {
     id: string;
     username: string;
     teamName: string;
+    clubLogoUrl?: string | null;
     avatarUrl?: string | null;
     nationality?: string | null;
   } | null;
@@ -117,8 +123,8 @@ export function PlayerPortalFixtures({ initialFixtures, playerId }: PlayerPortal
               </div>
               <h3 className="text-lg sm:text-xl font-black text-white">
                 {nextMatch.homePlayer?.id === playerId
-                  ? `VS @${nextMatch.awayPlayer?.username || "Opponent"} (${nextMatch.awayPlayer?.teamName || "Club"})`
-                  : `VS @${nextMatch.homePlayer?.username || "Opponent"} (${nextMatch.homePlayer?.teamName || "Club"})`}
+                  ? `VS @${nextMatch.awayPlayer?.username || "Opponent"} (${nextMatch.awayTeamName || nextMatch.awayPlayer?.teamName || "Club"})`
+                  : `VS @${nextMatch.homePlayer?.username || "Opponent"} (${nextMatch.homeTeamName || nextMatch.homePlayer?.teamName || "Club"})`}
               </h3>
               <p className="text-xs text-blue-200 mt-1 flex items-center gap-1.5 font-mono">
                 <Clock className="w-3.5 h-3.5 text-[#00b4ff]" />
@@ -140,8 +146,8 @@ export function PlayerPortalFixtures({ initialFixtures, playerId }: PlayerPortal
                     setSelectedForPreview({
                       homeId: nextMatch.homePlayer!.id,
                       awayId: nextMatch.awayPlayer!.id,
-                      homeName: nextMatch.homePlayer!.teamName,
-                      awayName: nextMatch.awayPlayer!.teamName,
+                      homeName: nextMatch.homeTeamName || nextMatch.homePlayer!.teamName,
+                      awayName: nextMatch.awayTeamName || nextMatch.awayPlayer!.teamName,
                     })
                   }
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#e5b53e] hover:bg-amber-400 text-gray-950 font-black text-xs uppercase tracking-wider rounded-lg transition shadow-sm"
@@ -199,7 +205,8 @@ export function PlayerPortalFixtures({ initialFixtures, playerId }: PlayerPortal
                 const isHome = m.homePlayer?.id === playerId;
                 const opp = isHome ? m.awayPlayer : m.homePlayer;
                 const oppName = opp?.username ? `@${opp.username}` : "Opponent TBD";
-                const oppClub = opp?.teamName || "Club TBD";
+                const oppClub = (isHome ? m.awayTeamName : m.homeTeamName) || opp?.teamName || "Club TBD";
+                const oppCrest = (isHome ? m.awayTeamLogoUrl : m.homeTeamLogoUrl) || opp?.clubLogoUrl || opp?.avatarUrl || "/branding/default-crest.svg";
                 const isPlayed = m.isCompleted && m.homeScore !== null && m.awayScore !== null;
 
                 let resultBadge: React.ReactNode = null;
@@ -234,12 +241,8 @@ export function PlayerPortalFixtures({ initialFixtures, playerId }: PlayerPortal
                   >
                     {/* Opponent & Status */}
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-gray-100 border overflow-hidden flex items-center justify-center shrink-0">
-                        {opp?.avatarUrl ? (
-                          <img src={opp.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                        ) : (
-                          <Swords className="w-4 h-4 text-gray-400" />
-                        )}
+                      <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0 p-1">
+                        <img src={oppCrest} alt={oppClub} className="w-full h-full object-contain" />
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
@@ -300,8 +303,8 @@ export function PlayerPortalFixtures({ initialFixtures, playerId }: PlayerPortal
                             setSelectedForPreview({
                               homeId: m.homePlayer!.id,
                               awayId: m.awayPlayer!.id,
-                              homeName: m.homePlayer!.teamName,
-                              awayName: m.awayPlayer!.teamName,
+                              homeName: m.homeTeamName || m.homePlayer!.teamName,
+                              awayName: m.awayTeamName || m.awayPlayer!.teamName,
                             })
                           }
                           className="px-2.5 py-1.5 bg-slate-100 hover:bg-[#e5b53e] hover:text-gray-950 text-gray-700 rounded-lg text-[10px] font-black uppercase tracking-wider transition flex items-center gap-1 shadow-xs"
