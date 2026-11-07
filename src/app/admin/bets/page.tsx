@@ -221,8 +221,8 @@ export default function AdminBetsPage() {
                         <div className="text-[11px] text-gray-600 space-y-0.5">
                           {selectionsArray.map((s: any, idx: number) => (
                             <div key={idx} className="truncate">
-                              • {s.label || s.match || `Match #${idx + 1}`}:{" "}
-                              <strong>{s.prediction || s.pick}</strong> ({s.odd || "1.8"}x)
+                              • {s.homePlayer && s.awayPlayer ? `${s.homePlayer} vs ${s.awayPlayer}` : s.label || s.match || `Match #${idx + 1}`}:{" "}
+                              <strong>{s.pickLabel || s.prediction || s.pick}</strong> ({s.odds || s.odd || "1.8"}x)
                             </div>
                           ))}
                         </div>

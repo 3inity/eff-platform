@@ -77,6 +77,13 @@ export async function GET() {
       const homeLogoUrl = homePart?.team?.logoUrl || homePart?.teamLogoUrl || m.homePlayer?.avatarUrl || "/branding/default-crest.svg";
       const awayLogoUrl = awayPart?.team?.logoUrl || awayPart?.teamLogoUrl || m.awayPlayer?.avatarUrl || "/branding/default-crest.svg";
 
+      const charCodeSum = m.id.split("").reduce((sum, c) => sum + c.charCodeAt(0), 0);
+      const homeOdds = Number((1.65 + ((charCodeSum % 7) * 0.08)).toFixed(2));
+      const drawOdds = Number((3.10 + ((charCodeSum % 5) * 0.10)).toFixed(2));
+      const awayOdds = Number((1.95 + (((charCodeSum + 3) % 8) * 0.08)).toFixed(2));
+      const over35Odds = Number((2.15 + ((charCodeSum % 6) * 0.08)).toFixed(2));
+      const under25Odds = Number((1.60 + (((charCodeSum + 2) % 5) * 0.07)).toFixed(2));
+
       return {
         id: m.id,
         competitionId: m.competitionId,
@@ -86,6 +93,7 @@ export async function GET() {
         matchday: m.matchday,
         legNumber: m.legNumber,
         scheduledAt: m.scheduledAt,
+        isCompleted: m.isCompleted,
         homePlayer: {
           id: m.homePlayer?.id || "",
           name: homeTeamName,
@@ -100,9 +108,11 @@ export async function GET() {
           teamName: awayTeamName,
           logoUrl: awayLogoUrl,
         },
-        homeOdds: 1.85,
-        drawOdds: 3.2,
-        awayOdds: 2.1,
+        homeOdds,
+        drawOdds,
+        awayOdds,
+        over35Odds,
+        under25Odds,
       };
     });
 
